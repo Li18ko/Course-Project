@@ -26,15 +26,16 @@ header {
     height: auto;
 }
 
-h1 {
+header h1 {
     width: 90%;
 }
 
 main {
-    flex: 1; 
+    flex: 1;
 }
 
-main h3 {
+main h2 {
+    margin-top: 30px;
     text-align: center;
 
 }
