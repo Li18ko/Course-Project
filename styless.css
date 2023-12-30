@@ -129,8 +129,18 @@ th, td {
 
 .pagination a.first-page-btn,
 .pagination a.last-page-btn {
-    background-color: #e6e8d7;
-    border: 1px solid #ddd;
+    background-color: #e0e0e1;
+    border: 1px solid #b2ebb1;
+}
+
+.pagination a.first-page-btn {
+    margin-right: auto; 
+    margin-left: 10%;
+}
+
+.pagination a.last-page-btn {
+    margin-left: auto;
+    margin-right: 10%;
 }
 
 .pagination a.first-page-btn:hover,
