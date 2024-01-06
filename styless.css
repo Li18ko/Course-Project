@@ -260,3 +260,28 @@ select {
 .two_search select {
     display: block;
 }
+
+#main_menu .selected {
+    color: #073506;
+}
+
+#main_menu {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+#main_menu a {
+    text-decoration: none;
+    color: #000000;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#main_menu a.selected {
+    color: #215f20;
+    background-color: #d0e8d0;
+}

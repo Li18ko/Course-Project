@@ -31,108 +31,128 @@ include 'db.php';
         <h2>Выберите необходимые параметры и найдите подходящую для вас спортивную площадку</h2>
 
         <div class="search-container">
-            <form action="index.php" method="GET">
-                <div class="one_search">
-                    <input type="text" name="search" placeholder="Поиск..."
-                        value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-                    <input type="submit" value="Найти">
-                </div>
-            </form>
+            <div id="main_menu">
+                <?php
+                    $searchTabClass = (empty($_GET['html_type']) || (isset($_GET['html_type']) && $_GET['html_type'] == 'search')) ? 'class="selected"' : '';
+                    $filterTabClass = (isset($_GET['html_type']) && $_GET['html_type'] == 'filter') ? 'class="selected"' : '';
+                ?>
 
-            <form action="index.php" method="GET">
-                <div class="two_search">
-                    <label for="typeSport">Тип площадки:</label>
-                    <select id="typeSport" name="typeSport">
-                        <option value="all_type" <?php echo ($_GET['typeSport'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
-                        <option value="badminton" <?php echo ($_GET['typeSport'] ?? '') === 'badminton' ? 'selected' : ''; ?>>Бадминтон</option>
-                        <option value="basketball" <?php echo ($_GET['typeSport'] ?? '') === 'basketball' ? 'selected' : ''; ?>>Баскетбол</option>
-                        <option value="volleyball" <?php echo ($_GET['typeSport'] ?? '') === 'volleyball' ? 'selected' : ''; ?>>Волейбол</option>
-                        <option value="workout" <?php echo ($_GET['typeSport'] ?? '') === 'workout' ? 'selected' : ''; ?>>Воркаут</option>
-                        <option value="gymnastic" <?php echo ($_GET['typeSport'] ?? '') === 'gymnastic' ? 'selected' : ''; ?>>Гимнастика</option>
-                        <option value="gto" <?php echo ($_GET['typeSport'] ?? '') === 'gto' ? 'selected' : ''; ?>>ГТО</option>
-                        <option value="mini-football" <?php echo ($_GET['typeSport'] ?? '') === 'mini-football' ? 'selected' : ''; ?>>Мини-футбол</option>
-                        <option value="table-tennis" <?php echo ($_GET['typeSport'] ?? '') === 'table-tennis' ? 'selected' : ''; ?>>Настольный теннис</option>
-                        <option value="ofp" <?php echo ($_GET['typeSport'] ?? '') === 'ofp' ? 'selected' : ''; ?>>ОФП</option>
-                        <option value="obstacle_course" <?php echo ($_GET['typeSport'] ?? '') === 'obstacle_course' ? 'selected' : ''; ?>>Полоса препятствий</option>
-                        <option value="roller_hockey" <?php echo ($_GET['typeSport'] ?? '') === 'roller_hockey' ? 'selected' : ''; ?>>Роллерхоккей</option>
-                        <option value="streetball" <?php echo ($_GET['typeSport'] ?? '') === 'streetball' ? 'selected' : ''; ?>>Стритбол</option>
-                        <option value="tennis" <?php echo ($_GET['typeSport'] ?? '') === 'tennis' ? 'selected' : ''; ?>>Теннис</option>
-                        <option value="exercise_equipment" <?php echo ($_GET['typeSport'] ?? '') === 'exercise_equipment' ? 'selected' : ''; ?>>Тренажеры</option>
-                        <option value="football" <?php echo ($_GET['typeSport'] ?? '') === 'football' ? 'selected' : ''; ?>>Футбол</option>
-                        <option value="hockey" <?php echo ($_GET['typeSport'] ?? '') === 'hockey' ? 'selected' : ''; ?>>Хоккей</option>
-                    </select>
-                    
-                    <label for="metro_transportStop">Ближайшее метро:</label>
-                    <select id="metro_transportStop" name="metro_transportStop">
-                        <?php $metro = array(
-                            'avtovo' => 'Автово', 'admiralteyskaya' => 'Адмиралтейская', 'academic' => 'Академическая',
-                            'baltic' => 'Балтийская', 'running' => 'Беговая', 'bucharest' => 'Бухарестская',
-                            'vasileostrovskaya' => 'Василеостровская', 'vladimirskaya' => 'Владимирская', 'volkovskay' => 'Волковская',
-                            'vyborgskaya' => 'Выборгская', 'mining institute' => 'Горный институт', 'gorkovskaya' => 'Горьковская',
-                            'gostiny dvor' => 'Гостиный двор', 'grazhdansky prospekt' => 'Гражданский проспект', 'devyatkino' => 'Девяткино',
-                            'dostoevskaya' => 'Достоевская', 'dunayskaya' => 'Дунайская', 'elizarovskaya' => 'Елизаровская',
-                            'starry' => 'Звездная', 'zvenigorodskaya' => 'Звенигородская', 'zenit' => 'Зенит',
-                            'kirovsky zavod' => 'Кировский завод', 'komendantsky prospekt' => 'Комендантский проспект', 'krestovsky island' => 'Крестовский остров',
-                            'kupchino' => 'Купчино', 'ladozhskaya' => 'Ладожская', 'leninsky prospekt' => 'Ленинский проспект',
-                            'forest' => 'Лесная', 'ligovsky prospekt' => 'Лиговский проспект', 'lomonosovskaya' => 'Ломоносовская',
-                            'mayakovskaya' => 'Маяковская', 'international' => 'Международная', 'moskovskaya' => 'Московская',
-                            'moskovskie vorota' => 'Московские ворота', 'narvskaya' => 'Нарвская', 'nevsky prospekt' => 'Невский проспект',
-                            'novocherkasskaya' => 'Новочеркасская', 'obvodny canal' => 'Обводный канал', 'obukhovo' => 'Обухово',
-                            'ozerki' => 'Озерки', 'victory park' => 'Парк Победы', 'parnas' => 'Парнас',
-                            'petrogradskaya' => 'Петроградская', 'pionerskaya' => 'Пионерская', 'alexander nevsky square' => 'Площадь Александра Невского',
-                            'vosstaniya square' => 'Площадь Восстания', 'lenin square' => 'Площадь Ленина', 'courage square' => 'Площадь Мужества',
-                            'polytechnic' => 'Политехническая', 'primorskaya' => 'Приморская', 'proletarian' => 'Пролетарская',
-                            'bolshevik avenue' => 'Проспект Большевиков', 'veterans avenue' => 'Проспект Ветеранов', 'enlightenment avenue' => 'Проспект Просвещения',
-                            'prospect of glory' => 'Проспект Славы', 'pushkinskaya' => 'Пушкинская', 'fishing' => 'Рыбацкое',
-                            'garden' => 'Садовая', 'haymarket square' => 'Сенная площадь', 'spasskaya' => 'Спасская',
-                            'sports' => 'Спортивная', 'old village' => 'Старая Деревня', 'institute of technology' => 'Технологический институт',
-                            'specific' => 'Удельная', 'dybenko street' => 'Улица Дыбенко', 'frunzenskaya' => 'Фрунзенская',
-                            'black river' => 'Черная речка', 'chernyshevskaya' => 'Чернышевская', 'chkalovskaya' => 'Чкаловская',
-                            'shushary' => 'Шушары', 'electrosila' => 'Электросила'
+                <a href="?html_type=search" <?php echo $searchTabClass; ?>>Поисковая строка</a>
+                <a href="?html_type=filter" <?php echo $filterTabClass; ?>>Фильтры</a>
+            </div> 
+            <br>
+
+            <?php
+                if (!isset($_GET['html_type']) || $_GET['html_type']== 'search' ){ 
+                    ?>
+                    <form action="index.php" method="GET">
+                        <input type="hidden" name="html_type" value="search">
+                        <div class="one_search">
+                            <input type="text" name="search" placeholder="Поиск..."
+                                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                            <input type="submit" value="Найти">
+                        </div>
+                    </form>
+                <?php
+                } else { ?>
+                    <form action="index.php" method="GET">
+                        <input type="hidden" name="html_type" value="filter">
+                        <div class="two_search">
+                            <label for="typeSport">Тип площадки:</label>
+                            <select id="typeSport" name="typeSport">
+                                <option value="all_type" <?php echo ($_GET['typeSport'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
+                                <option value="badminton" <?php echo ($_GET['typeSport'] ?? '') === 'badminton' ? 'selected' : ''; ?>>Бадминтон</option>
+                                <option value="basketball" <?php echo ($_GET['typeSport'] ?? '') === 'basketball' ? 'selected' : ''; ?>>Баскетбол</option>
+                                <option value="volleyball" <?php echo ($_GET['typeSport'] ?? '') === 'volleyball' ? 'selected' : ''; ?>>Волейбол</option>
+                                <option value="workout" <?php echo ($_GET['typeSport'] ?? '') === 'workout' ? 'selected' : ''; ?>>Воркаут</option>
+                                <option value="gymnastic" <?php echo ($_GET['typeSport'] ?? '') === 'gymnastic' ? 'selected' : ''; ?>>Гимнастика</option>
+                                <option value="gto" <?php echo ($_GET['typeSport'] ?? '') === 'gto' ? 'selected' : ''; ?>>ГТО</option>
+                                <option value="mini-football" <?php echo ($_GET['typeSport'] ?? '') === 'mini-football' ? 'selected' : ''; ?>>Мини-футбол</option>
+                                <option value="table-tennis" <?php echo ($_GET['typeSport'] ?? '') === 'table-tennis' ? 'selected' : ''; ?>>Настольный теннис</option>
+                                <option value="ofp" <?php echo ($_GET['typeSport'] ?? '') === 'ofp' ? 'selected' : ''; ?>>ОФП</option>
+                                <option value="obstacle_course" <?php echo ($_GET['typeSport'] ?? '') === 'obstacle_course' ? 'selected' : ''; ?>>Полоса препятствий</option>
+                                <option value="roller_hockey" <?php echo ($_GET['typeSport'] ?? '') === 'roller_hockey' ? 'selected' : ''; ?>>Роллерхоккей</option>
+                                <option value="streetball" <?php echo ($_GET['typeSport'] ?? '') === 'streetball' ? 'selected' : ''; ?>>Стритбол</option>
+                                <option value="tennis" <?php echo ($_GET['typeSport'] ?? '') === 'tennis' ? 'selected' : ''; ?>>Теннис</option>
+                                <option value="exercise_equipment" <?php echo ($_GET['typeSport'] ?? '') === 'exercise_equipment' ? 'selected' : ''; ?>>Тренажеры</option>
+                                <option value="football" <?php echo ($_GET['typeSport'] ?? '') === 'football' ? 'selected' : ''; ?>>Футбол</option>
+                                <option value="hockey" <?php echo ($_GET['typeSport'] ?? '') === 'hockey' ? 'selected' : ''; ?>>Хоккей</option>
+                            </select>
                             
-                        );
-                        ?>
+                            <label for="metro_transportStop">Ближайшее метро:</label>
+                            <select id="metro_transportStop" name="metro_transportStop">
+                                <?php $metro = array(
+                                    'avtovo' => 'Автово', 'admiralteyskaya' => 'Адмиралтейская', 'academic' => 'Академическая',
+                                    'baltic' => 'Балтийская', 'running' => 'Беговая', 'bucharest' => 'Бухарестская',
+                                    'vasileostrovskaya' => 'Василеостровская', 'vladimirskaya' => 'Владимирская', 'volkovskay' => 'Волковская',
+                                    'vyborgskaya' => 'Выборгская', 'mining institute' => 'Горный институт', 'gorkovskaya' => 'Горьковская',
+                                    'gostiny dvor' => 'Гостиный двор', 'grazhdansky prospekt' => 'Гражданский проспект', 'devyatkino' => 'Девяткино',
+                                    'dostoevskaya' => 'Достоевская', 'dunayskaya' => 'Дунайская', 'elizarovskaya' => 'Елизаровская',
+                                    'starry' => 'Звездная', 'zvenigorodskaya' => 'Звенигородская', 'zenit' => 'Зенит',
+                                    'kirovsky zavod' => 'Кировский завод', 'komendantsky prospekt' => 'Комендантский проспект', 'krestovsky island' => 'Крестовский остров',
+                                    'kupchino' => 'Купчино', 'ladozhskaya' => 'Ладожская', 'leninsky prospekt' => 'Ленинский проспект',
+                                    'forest' => 'Лесная', 'ligovsky prospekt' => 'Лиговский проспект', 'lomonosovskaya' => 'Ломоносовская',
+                                    'mayakovskaya' => 'Маяковская', 'international' => 'Международная', 'moskovskaya' => 'Московская',
+                                    'moskovskie vorota' => 'Московские ворота', 'narvskaya' => 'Нарвская', 'nevsky prospekt' => 'Невский проспект',
+                                    'novocherkasskaya' => 'Новочеркасская', 'obvodny canal' => 'Обводный канал', 'obukhovo' => 'Обухово',
+                                    'ozerki' => 'Озерки', 'victory park' => 'Парк Победы', 'parnas' => 'Парнас',
+                                    'petrogradskaya' => 'Петроградская', 'pionerskaya' => 'Пионерская', 'alexander nevsky square' => 'Площадь Александра Невского',
+                                    'vosstaniya square' => 'Площадь Восстания', 'lenin square' => 'Площадь Ленина', 'courage square' => 'Площадь Мужества',
+                                    'polytechnic' => 'Политехническая', 'primorskaya' => 'Приморская', 'proletarian' => 'Пролетарская',
+                                    'bolshevik avenue' => 'Проспект Большевиков', 'veterans avenue' => 'Проспект Ветеранов', 'enlightenment avenue' => 'Проспект Просвещения',
+                                    'prospect of glory' => 'Проспект Славы', 'pushkinskaya' => 'Пушкинская', 'fishing' => 'Рыбацкое',
+                                    'garden' => 'Садовая', 'haymarket square' => 'Сенная площадь', 'spasskaya' => 'Спасская',
+                                    'sports' => 'Спортивная', 'old village' => 'Старая Деревня', 'institute of technology' => 'Технологический институт',
+                                    'specific' => 'Удельная', 'dybenko street' => 'Улица Дыбенко', 'frunzenskaya' => 'Фрунзенская',
+                                    'black river' => 'Черная речка', 'chernyshevskaya' => 'Чернышевская', 'chkalovskaya' => 'Чкаловская',
+                                    'shushary' => 'Шушары', 'electrosila' => 'Электросила'
+                                    
+                                );
+                                ?>
 
-                        <option value="all_type" <?php echo ($_GET['metro_transportStop'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
+                                <option value="all_type" <?php echo ($_GET['metro_transportStop'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
 
-                        <?php
-                        foreach ($metro as $key => $value) {
-                            $selected = isset($_GET['metro_transportStop']) && $_GET['metro_transportStop'] === $key ? 'selected' : '';
-                            echo '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
-                        }
-                        ?>
-                    </select>
+                                <?php
+                                foreach ($metro as $key => $value) {
+                                    $selected = isset($_GET['metro_transportStop']) && $_GET['metro_transportStop'] === $key ? 'selected' : '';
+                                    echo '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
+                                }
+                                ?>
+                            </select>
 
-                    <label for="availabilityRentalEquipment">Наличие проката инвентаря:</label>
-                    <select id="availabilityRentalEquipment" name="availabilityRentalEquipment">
-                        <option value="all_type" <?php echo ($_GET['availabilityRentalEquipment'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
-                        <option value="yes" <?php echo ($_GET['availabilityRentalEquipment'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
-                        <option value="no" <?php echo ($_GET['availabilityRentalEquipment'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
-                    </select>
+                            <label for="availabilityRentalEquipment">Наличие проката инвентаря:</label>
+                            <select id="availabilityRentalEquipment" name="availabilityRentalEquipment">
+                                <option value="all_type" <?php echo ($_GET['availabilityRentalEquipment'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
+                                <option value="yes" <?php echo ($_GET['availabilityRentalEquipment'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
+                                <option value="no" <?php echo ($_GET['availabilityRentalEquipment'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
+                            </select>
 
-                    <label for="availabilityInstructorServices">Наличие услуг инструктора:</label>
-                    <select id="availabilityInstructorServices" name="availabilityInstructorServices">
-                        <option value="all_type" <?php echo ($_GET['availabilityInstructorServices'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
-                        <option value="yes" <?php echo ($_GET['availabilityInstructorServices'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
-                        <option value="no" <?php echo ($_GET['availabilityInstructorServices'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
-                    </select>
+                            <label for="availabilityInstructorServices">Наличие услуг инструктора:</label>
+                            <select id="availabilityInstructorServices" name="availabilityInstructorServices">
+                                <option value="all_type" <?php echo ($_GET['availabilityInstructorServices'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
+                                <option value="yes" <?php echo ($_GET['availabilityInstructorServices'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
+                                <option value="no" <?php echo ($_GET['availabilityInstructorServices'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
+                            </select>
 
-                    <label for="availabilityChangingRoom">Наличие помещения для переодевания:</label>
-                    <select id="availabilityChangingRoom" name="availabilityChangingRoom">
-                        <option value="all_type" <?php echo ($_GET['availabilityChangingRoom'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
-                        <option value="yes" <?php echo ($_GET['availabilityChangingRoom'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
-                        <option value="no" <?php echo ($_GET['availabilityChangingRoom'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
-                    </select>
+                            <label for="availabilityChangingRoom">Наличие помещения для переодевания:</label>
+                            <select id="availabilityChangingRoom" name="availabilityChangingRoom">
+                                <option value="all_type" <?php echo ($_GET['availabilityChangingRoom'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
+                                <option value="yes" <?php echo ($_GET['availabilityChangingRoom'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
+                                <option value="no" <?php echo ($_GET['availabilityChangingRoom'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
+                            </select>
 
-                    <label for="availabilityStorageRoom">Наличие камеры хранения:</label>
-                    <select id="availabilityStorageRoom" name="availabilityStorageRoom">
-                        <option value="all_type" <?php echo ($_GET['availabilityStorageRoom'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
-                        <option value="yes" <?php echo ($_GET['availabilityStorageRoom'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
-                        <option value="no" <?php echo ($_GET['availabilityStorageRoom'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
-                    </select>
-                </div>
-                <input type="submit" value="Найти">
-            </form>
+                            <label for="availabilityStorageRoom">Наличие камеры хранения:</label>
+                            <select id="availabilityStorageRoom" name="availabilityStorageRoom">
+                                <option value="all_type" <?php echo ($_GET['availabilityStorageRoom'] ?? '') === 'all_type' ? 'selected' : ''; ?>>Не выбрано</option>
+                                <option value="yes" <?php echo ($_GET['availabilityStorageRoom'] ?? '') === 'yes' ? 'selected' : ''; ?>>Да</option>
+                                <option value="no" <?php echo ($_GET['availabilityStorageRoom'] ?? '') === 'no' ? 'selected' : ''; ?>>Нет</option>
+                            </select>
+                        </div>            
+                        <input type="submit" value="Найти">
+                    </form>
+                <?php
+                }
+            ?>
         </div>
 
         <div class="info">
