@@ -334,7 +334,7 @@ include 'db.php';
     </main>
 
     <footer>
-        <p>&copy; 2023 Корнеева Е.С.</p>
+        <p>&copy; 2023-2024 Корнеева Е.С.</p>
     </footer>
 
     <script src="script.js"></script>
