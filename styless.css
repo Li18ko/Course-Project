@@ -4,6 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    width: 100%;
 }
 
 header {
@@ -37,7 +38,6 @@ main {
 main h2 {
     margin-top: 30px;
     text-align: center;
-
 }
 
 footer {
@@ -284,4 +284,112 @@ select {
 #main_menu a.selected {
     color: #215f20;
     background-color: #d0e8d0;
+}
+
+@media only screen and (max-width: 768px) {
+    header {
+        background-color: #bad0b4;
+        color: rgb(31, 25, 25);
+        padding: 25px;
+        display: flex;
+        flex-direction: column; 
+        align-items: center; 
+        text-align: center; 
+        font-style: italic;
+    }
+    
+    .logo-container {
+        margin-bottom: 10px; 
+        text-align: center;
+    }
+    
+    .logo-container img {
+        width: 30%;
+        height: auto;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    header h1 {
+        width: 100%; 
+        font-size: 24px;
+    }
+
+    main h2 {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .animated-line {
+        display: none;
+    }
+    
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 8.5px;
+        text-align: center;
+        display: flex;
+        flex-direction: center;
+        align-items: center;
+    }
+    
+    th, td {
+        border: 1px solid black;
+        padding: 4px;
+        text-align: center;
+    }
+    
+    .info {
+        width: 90%;
+        margin: 0;
+        text-align: center;
+        display: flex;
+        flex-direction: center;
+        align-items: center;
+    }
+    
+    .search-container form {
+        width: 90%;
+        margin-bottom: 10px;
+    }
+    
+    .one_search,
+    .two_search {
+        width: 90%; 
+        margin-bottom: 15px;
+    }
+    
+    input[type="text"],
+    select {
+        width: 100%; 
+    }
+    
+    .pagination,
+    .modal,
+    .parameters {
+        margin: 15px 0;
+    }
+    
+    .modal-content p {
+        font-size: 10px; 
+    }
+    
+    #main_menu {
+        flex-direction: column; 
+        align-items: center; 
+        padding: 10px;
+    }
+    
+    #main_menu a {
+        width: 100%; 
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    footer {
+        text-align: center;
+    }
+    
 }
