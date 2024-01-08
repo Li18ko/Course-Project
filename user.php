@@ -24,7 +24,7 @@ if(!isset($_SESSION["user"])){
 
 <body>
     <header>
-        <div class="osn_sign_in">
+    <div class="osn_sign_in">
             <div class="osn">
                 <div class="logo-container">
                     <img src="image\logo.svg" alt="Логотип">
@@ -32,13 +32,15 @@ if(!isset($_SESSION["user"])){
                 <h1>Внутридворовые спортивные площадки Санкт-Петербурга</h1>
                 <div class="animated-line"></div>
             </div>
+            <div class="sign_in-container">
+                <a href="auth.php">
+                    <img src="image\exit.svg" alt="Выход">
+                </a>
+            </div>
         </div>
     </header>
     <main>
         <h2>Личный кабинет</h2>
-        <div class="button_back">
-            <button onclick="window.location.href='auth.php'">Выход</button>
-        </div>
         
 
         <?php

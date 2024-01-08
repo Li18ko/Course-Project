@@ -448,6 +448,8 @@ select {
     background-color: #bbb;
 }
 
+
+
 @media only screen and (max-width: 768px) {
     .osn_sign_in {
         padding: 15px;
