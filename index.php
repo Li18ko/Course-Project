@@ -10,7 +10,7 @@ include 'db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ваш заголовок страницы</title>
+    <title>Внутридворовые спортивные площадки Санкт-Петербурга</title>
     <link rel="stylesheet" href="styless.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,11 +20,20 @@ include 'db.php';
 
 <body>
     <header>
-        <div class="logo-container">
-            <img src="image\logo.svg" alt="Логотип">
+        <div class="osn_sign_in">
+            <div class="osn">
+                <div class="logo-container">
+                    <img src="image\logo.svg" alt="Логотип">
+                </div>
+                <h1>Внутридворовые спортивные площадки Санкт-Петербурга</h1>
+                <div class="animated-line"></div>
+            </div>
+            <div class="sign_in-container">
+                <a href="auth.php">
+                    <img src="image\sign_in.svg" alt="Вход">
+                </a>
+            </div>
         </div>
-        <h1>Внутридворовые спортивные площадки Санкт-Петербурга</h1>
-        <div class="animated-line"></div>
     </header>
 
     <main>
