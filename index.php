@@ -1,7 +1,6 @@
 <?php
-
 include 'db.php';
-
+require("session.php");
 ?>
 
 <!DOCTYPE html>
@@ -29,9 +28,19 @@ include 'db.php';
                 <div class="animated-line"></div>
             </div>
             <div class="sign_in-container">
-                <a href="auth.php">
-                    <img src="image\sign_in.svg" alt="Вход">
-                </a>
+                <?php
+                    if (!isset($_SESSION["user"])){ ?>
+                        <a href="auth.php">
+                            <img src="image\sign_in.svg" alt="Вход">
+                        </a>
+                    <?php }
+                    else { ?>
+                        <a href="user.php">
+                            <img src="image\user.svg" alt="Пользователь">
+                        </a>
+                    <?php }
+                ?>
+                
             </div>
         </div>
     </header>

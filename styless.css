@@ -468,6 +468,10 @@ select {
     margin-top: 1%;
 }
 
+main h3 {
+    text-align: center;
+}
+
 
 @media only screen and (max-width: 768px) {
     .osn_sign_in {

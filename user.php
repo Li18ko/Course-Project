@@ -33,16 +33,18 @@ if(!isset($_SESSION["user"])){
                 <div class="animated-line"></div>
             </div>
             <div class="sign_in-container">
-                <a href="auth.php">
+                <a href="logout.php">
                     <img src="image\exit.svg" alt="Выход">
+                </a>
+                <br>
+                <br>
+                <a href="index.php">
+                    <img src="image\home.svg" alt="на главную">
                 </a>
             </div>
         </div>
     </header>
     <main>
-        <h2>Личный кабинет</h2>
-        
-
         <?php
         $result = mysqli_query($mysql , "SELECT * FROM users WHERE id=" . $session_user["id"]);
         
@@ -56,10 +58,9 @@ if(!isset($_SESSION["user"])){
                 $pages[] = $page;
             }
         }*/
-        
-        $title = "Страница пользователя";
-        $content = "<p>".$user["name"]." [".$user["login"]."]</p>";
-        echo "<p>" . $user["name"]. " " . "[" . $user['login'] . "]</p>";
+
+        echo '<h2>Личный кабинет</h2>';
+        echo '<h3>' . $user["name"]. ' ' . '[' . $user['login'] . ']</h3>';
         /*$content .= "<h2>Страницы пользователя</h2>";
         $content .= "<p>Общее количество страниц: ". mysqli_num_rows($result) ."</p>";*/
         
