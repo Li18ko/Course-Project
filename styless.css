@@ -611,5 +611,22 @@ select {
     footer {
         text-align: center;
     }
+
+    .auth_mobile {
+        height: 600px;
+        margin-bottom: 30%;
+    }
+
+    .auth h5{
+        margin-top: 33%;
+    }
     
+    .help {
+        margin-top: -54%;
+    }
+
+    .signup_mobile {
+        height: 600px;
+        margin-bottom: 30%;
+    }
 }

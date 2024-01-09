@@ -33,7 +33,7 @@ include 'db.php';
             </div>
         </div>
     </header>
-    <main>
+    <main class="signup_mobile">
         <h2>Регистрация</h2>
         <div class="signup">
             <form method="POST" autocomplete="off">

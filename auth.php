@@ -33,7 +33,7 @@ include 'db.php';
             </div>
         </div>
     </header>
-    <main>
+    <main class="auth_mobile">
         <h2>Авторизация</h2>
         <div class="auth">
             <form method="POST" autocomplete="off">
