@@ -330,19 +330,6 @@ select {
     position: relative;
 }
 
-.signup {
-    max-width: 400px;
-    height: 300px;
-    margin: 0 auto;
-    padding: 30px;
-    background-color: #ebf3ee;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 2%;
-    text-align: center;
-    position: relative;
-}
-
 .auth form {
     display: flex;
     flex-direction: column;
@@ -406,6 +393,19 @@ select {
     margin-top: 25%;
 }
 
+.signup {
+    max-width: 400px;
+    height: 330px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ebf3ee;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 2%;
+    text-align: center;
+    position: relative;
+}
+
 .signup form {
     display: flex;
     flex-direction: column;
@@ -448,6 +448,25 @@ select {
     background-color: #bbb;
 }
 
+.help {
+    margin-top: -44%;
+}
+
+.help p{
+    text-align: center;
+    font-size: 15px;
+    margin-top: 1%;
+}
+
+.help_signup {
+    margin-top: -9%;
+}
+
+.help_signup p{
+    text-align: center;
+    font-size: 15px;
+    margin-top: 1%;
+}
 
 
 @media only screen and (max-width: 768px) {

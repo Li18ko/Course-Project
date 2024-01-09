@@ -38,13 +38,13 @@ include 'db.php';
         <div class="signup">
             <form method="POST" autocomplete="off">
                 <label>ФИО</label>
-                <input type="text" name="name">
+                <input type="text" name="name" required>
                 <br>
                 <label>Логин </label>
-                <input type="text" name="login">
+                <input type="text" name="login" required>
                 <br>
                 <label>Пароль </label>
-                <input type="password" name="password">
+                <input type="password" name="password" required>
                 <br>
                 <div class="back_sign_in">
                     <div class="button_sign_in">
@@ -53,33 +53,31 @@ include 'db.php';
                 </div>
             </form>
             <br>
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+                $result = mysqli_query($mysql, "SELECT * FROM users WHERE login=\"".$_POST['login']."\"");
+                if(mysqli_num_rows($result) == 0){
+                    mysqli_query($mysql, "INSERT INTO users (name, login, password) VALUES (
+                        \"".$_POST["name"]."\", 
+                        \"".$_POST["login"]."\",
+                        \"".md5($_POST["password"])."\"
+                        )"
+                    );
+
+                    header("Location: auth.php");
+                }
+                else{
+                    echo '<div class="help_signup">';
+                        echo '<p>Такой пользователь уже существует</p>';
+                    echo '</div>';
+                }
+            
+            }
+            ?>
             <div class="button_back">
                 <button onclick="window.location.href='auth.php'">Назад</button>
             </div>
         </div>
-        
-
-        <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $result = mysqli_query($mysql, "SELECT * FROM users WHERE login=\"".$_POST['login']."\"");
-            echo '<p>Такой пользователь уже существует</p>';
-            //echo mysqli_num_rows($result);
-            if(mysqli_num_rows($result) == 0){
-                mysqli_query($mysql, "INSERT INTO users (name, login, password) VALUES (
-                    \"".$_POST["name"]."\", 
-                    \"".$_POST["login"]."\",
-                    \"".md5($_POST["password"])."\"
-                    )"
-                );
-
-                session_start();
-                $_SESSION["user"] = mysqli_fetch_assoc($result);
-        
-                header("Location: auth.php");
-            }
-        
-        }
-        ?>
     </main>
 
     <footer>

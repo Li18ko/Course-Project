@@ -45,11 +45,6 @@ if(!isset($_SESSION["user"])){
 
         <?php
         $result = mysqli_query($mysql , "SELECT * FROM users WHERE id=" . $session_user["id"]);
-
-        if (!$result || !mysqli_num_rows($result)) {
-            echo "<p>Такого пользователя не существует.</p>";
-            exit;
-        }
         
         $user = mysqli_fetch_assoc($result);
         /*$pages = array();

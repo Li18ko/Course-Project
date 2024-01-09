@@ -38,10 +38,10 @@ include 'db.php';
         <div class="auth">
             <form method="POST" autocomplete="off">
                 <label>Логин </label>
-                <input type="text" name="login">
+                <input type="text" name="login" required>
                 <br>
                 <label>Пароль </label>
-                <input type="password" name="password">
+                <input type="password" name="password" required>
                 <br>
                 <div class="back_sign_in">
                     <div class="button_sign_in">
@@ -54,32 +54,40 @@ include 'db.php';
                 <button onclick="window.location.href='index.php'">Назад</button>
             </div>
             <h5>Еще нет аккаунта? <a href="signup.php">Зарегистрируйся!</a></h5>
-        </div>
-        
 
-        <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $login = mysqli_real_escape_string($mysql, $_POST['login']);
-            $password = md5($_POST['password']);
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $login = mysqli_real_escape_string($mysql, $_POST['login']);
+                $password = md5($_POST['password']);
 
-            $stmt = $mysql->prepare("SELECT * FROM users WHERE login=? AND password=?");
-            $stmt->bind_param("ss", $login, $password);
-            $stmt->execute();
-            $result = $stmt->get_result();
+                $stmt = $mysql->prepare("SELECT * FROM users WHERE login=? AND password=?");
+                $stmt->bind_param("ss", $login, $password);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            if(!$result || mysqli_num_rows($result) == 0){
-                echo "Такой пользователь не существует.";
-                exit;
+                if(!$result || mysqli_num_rows($result) == 0){
+                    echo '<div class="help">';
+                        echo '<p>Такой пользователь не существует.</p>';
+                    echo '</div>';
+                }
+                else {
+                    $row = mysqli_fetch_assoc($result);
+                    if ($row['login'] == $login && $row['password'] == $password) {
+                        session_start();
+                        $_SESSION["user"] = $row;
+                        header("Location: user.php");
+                    } else {
+                        echo '<div class="help">';
+                            echo '<p>Неверный логин или пароль</p>';
+                        echo '</div>';
+                    }
+
+                    $stmt->close();
+                }
+
             }
-            
-            session_start();
-            $_SESSION["user"] = mysqli_fetch_assoc($result);
-            $stmt->close();
-            
-            
-            header("Location: user.php");
-        }
-        ?>
+            ?>
+        </div>
     </main>
 
     <footer>
