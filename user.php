@@ -190,8 +190,8 @@ if(!isset($_SESSION["user"])){
                 $bindTypes = "";
 
                 if (!empty($searchTerm)) {
-                    $whereConditions[] = "LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
-                    LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?)";
+                    $whereConditions[] = "(LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
+                    LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?)) AND favorites.user_id =" . $session_user['id'];
 
                     // Привязываем параметры для поисковой строки
                     $bindParams = array_pad($bindParams, substr_count($whereConditions[0], '?'), $searchTerm);
@@ -212,9 +212,9 @@ if(!isset($_SESSION["user"])){
                 }
 
                 // Собираем SQL-запрос
-                $sql = "SELECT COUNT(*) AS total FROM dataset";
+                $sql = "SELECT COUNT(*) AS total FROM dataset JOIN favorites ON dataset.id = favorites.area_id WHERE favorites.user_id =" . $session_user['id'];
                 if (!empty($whereConditions)) {
-                    $sql .= " WHERE " . implode(" AND ", $whereConditions);
+                    $sql .= implode(" AND ", $whereConditions);
                 }
 
                 $stmt = $mysql->prepare($sql);
@@ -236,9 +236,9 @@ if(!isset($_SESSION["user"])){
                 $offset = ($currentPage - 1) * $recordsPerPage;
 
                 // Собираем SQL-запрос для выборки данных
-                $sql = "SELECT * FROM dataset";
+                $sql = "SELECT * FROM dataset JOIN favorites ON dataset.id = favorites.area_id WHERE favorites.user_id =" . $session_user['id'];
                 if (!empty($whereConditions)) {
-                    $sql .= " WHERE " . implode(" AND ", $whereConditions);
+                    $sql .= implode(" AND ", $whereConditions);
                 }
                 $sql .= " LIMIT $offset, $recordsPerPage";
 
@@ -320,7 +320,7 @@ if(!isset($_SESSION["user"])){
                             echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices "]) ? $row["otherServices "] : '-') . '</p>';
                             ?>
                             <div class="favorite"><?php
-                                echo '<a href="delete_favorite.php?id=' . $row["id"] . '">Удалить из избранного</a>';?>
+                                echo '<a href="delete_favorite.php?id=' . $row["id"] . '&u=yes">Удалить из избранного</a>';?>
                             </div>
                             <?php
                             echo '    </div>';
@@ -364,6 +364,9 @@ if(!isset($_SESSION["user"])){
     <footer>
         <p>&copy; 2023-2024 Корнеева Е.С.</p>
     </footer>
+
+    <script src="script.js"></script>
+
 </body>
 </html>
 

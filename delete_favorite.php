@@ -13,7 +13,12 @@ $stmt->execute();
 if ($stmt->errno) {
     echo "Error: " . $stmt->error;
 } else {
-    header('Location: index.php');
+    if (isset($_GET['u']) && $_GET['u'] === 'yes'){
+        header('Location: user.php');
+    }
+    else {
+        header('Location: index.php');
+    }
     exit;
 }
 
