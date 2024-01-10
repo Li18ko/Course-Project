@@ -26,7 +26,7 @@ include 'db.php';
                 <h1>Внутридворовые спортивные площадки Санкт-Петербурга</h1>
                 <div class="animated-line"></div>
             </div>
-            <div class="sign_in-container">
+            <div class="sign_in-container" class="big">
                 <a href="index.php">
                     <img src="image\home.svg" alt="На главную">
                 </a>

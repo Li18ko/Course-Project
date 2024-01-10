@@ -175,7 +175,6 @@ require("session.php");
 
         <div class="info">
         <?php
-
             if ($_SERVER["REQUEST_METHOD"] === "GET") {
                 $searchTerm = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '';
 
@@ -312,17 +311,40 @@ require("session.php");
                             echo '        <p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . ($row["availabilityChangingRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
                             echo '        <p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
                             echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices "]) ? $row["otherServices "] : '-') . '</p>';
+                            if (isset($_SESSION["user"])){
+                                $selectQuery = "SELECT id FROM favorites WHERE user_id = ? AND area_id = ?";
+                                $stmt = $mysql->prepare($selectQuery);
+                                $stmt->bind_param('ii', $session_user['id'], $row["id"]);
+                                $stmt->execute();
+                            
+                                $favoritesResult = $stmt->get_result();
+                                $favoriteRow = $favoritesResult->fetch_assoc();
+
+                                if ($favoriteRow) {
+                                    $favoriteId = $favoriteRow['id'];
+                                    ?>
+                                    <div class="favorite"><?php
+                                        echo '<a href="delete_favorite.php?id=' . $favoriteId . '">Удалить из избранного</a>';?>
+                                    </div>
+                                <?php } else {
+                                    ?>
+                                    <div class="favorite"><?php
+                                        echo '<a href="insert_favorite.php?id=' . $row["id"] . '">Добавить в избранное</a>';?>
+                                    </div>
+                                <?php }
+                                $stmt->close();
+                            }
                             echo '    </div>';
                             echo '</div>';
                         }
                     }
                     ?>
                 </table>
+                <br>
+                <br>
                 <?php
             }
             ?>
-            <br>
-            <br>
         </div>
 
         <div class="pagination">
@@ -348,7 +370,6 @@ require("session.php");
             ?>
         </div>
         <br>
-
     </main>
 
     <footer>
