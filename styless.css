@@ -530,6 +530,10 @@ main h3 {
         align-items: flex-start;
     }
 
+    .sign_in-container a {
+        width: 100%;
+    }
+
 
     .sign_in-container img {
         width: 10%;

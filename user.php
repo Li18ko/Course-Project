@@ -70,7 +70,7 @@ if(!isset($_SESSION["user"])){
             <?php
                 if (!isset($_GET['html_type']) || $_GET['html_type']== 'search' ){ 
                     ?>
-                    <form action="index.php" method="GET">
+                    <form action="user.php" method="GET">
                         <input type="hidden" name="html_type" value="search">
                         <div class="one_search">
                             <input type="text" name="search" placeholder="Поиск..."
@@ -80,7 +80,7 @@ if(!isset($_SESSION["user"])){
                     </form>
                 <?php
                 } else { ?>
-                    <form action="index.php" method="GET">
+                    <form action="user.php" method="GET">
                         <input type="hidden" name="html_type" value="filter">
                         <div class="two_search">
                             <label for="typeSport">Тип площадки:</label>
@@ -212,9 +212,9 @@ if(!isset($_SESSION["user"])){
                 }
 
                 // Собираем SQL-запрос
-                $sql = "SELECT COUNT(*) AS total FROM dataset JOIN favorites ON dataset.id = favorites.area_id WHERE favorites.user_id =" . $session_user['id'];
+                $sql = "SELECT COUNT(*) AS total FROM dataset JOIN favorites ON dataset.id = favorites.area_id";
                 if (!empty($whereConditions)) {
-                    $sql .= implode(" AND ", $whereConditions);
+                    $sql .= " WHERE " . implode(" AND ", $whereConditions);
                 }
 
                 $stmt = $mysql->prepare($sql);
@@ -236,9 +236,9 @@ if(!isset($_SESSION["user"])){
                 $offset = ($currentPage - 1) * $recordsPerPage;
 
                 // Собираем SQL-запрос для выборки данных
-                $sql = "SELECT * FROM dataset JOIN favorites ON dataset.id = favorites.area_id WHERE favorites.user_id =" . $session_user['id'];
+                $sql = "SELECT * FROM dataset JOIN favorites ON dataset.id = favorites.area_id";
                 if (!empty($whereConditions)) {
-                    $sql .= implode(" AND ", $whereConditions);
+                    $sql .= " WHERE " . implode(" AND ", $whereConditions);
                 }
                 $sql .= " LIMIT $offset, $recordsPerPage";
 
