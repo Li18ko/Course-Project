@@ -210,7 +210,7 @@ require("session.php");
                     $sql .= " WHERE " . implode(" AND ", $whereConditions);
                 }
 
-                $stmt = $mysql->prepare($sql);
+                $stmt = $mysqli->prepare($sql);
 
                 // Привязываем параметры
                 if (!empty($bindParams)) {
@@ -235,7 +235,7 @@ require("session.php");
                 }
                 $sql .= " LIMIT $offset, $recordsPerPage";
 
-                $stmt = $mysql->prepare($sql);
+                $stmt = $mysqli->prepare($sql);
 
                 // Привязываем параметры
                 if (!empty($bindParams)) {
@@ -313,7 +313,7 @@ require("session.php");
                             echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices "]) ? $row["otherServices "] : '-') . '</p>';
                             if (isset($_SESSION["user"])){
                                 $selectQuery = "SELECT id FROM favorites WHERE user_id = ? AND area_id = ?";
-                                $stmt = $mysql->prepare($selectQuery);
+                                $stmt = $mysqli->prepare($selectQuery);
                                 $stmt->bind_param('ii', $session_user['id'], $row["id"]);
                                 $stmt->execute();
                             

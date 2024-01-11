@@ -5,7 +5,7 @@ require("session.php");
 $favoriteId = $_GET['id'];
 
 $deleteQuery = "DELETE FROM favorites WHERE id = ?";
-$stmt = $mysql->prepare($deleteQuery);
+$stmt = $mysqli->prepare($deleteQuery);
 $stmt->bind_param('i', $favoriteId);
 
 $stmt->execute();

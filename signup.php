@@ -55,9 +55,9 @@ include 'db.php';
             <br>
             <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-                $result = mysqli_query($mysql, "SELECT * FROM users WHERE login=\"".$_POST['login']."\"");
+                $result = mysqli_query($mysqli, "SELECT * FROM users WHERE login=\"".$_POST['login']."\"");
                 if(mysqli_num_rows($result) == 0){
-                    mysqli_query($mysql, "INSERT INTO users (name, login, password) VALUES (
+                    mysqli_query($mysqli, "INSERT INTO users (name, login, password) VALUES (
                         \"".$_POST["name"]."\", 
                         \"".$_POST["login"]."\",
                         \"".md5($_POST["password"])."\"

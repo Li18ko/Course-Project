@@ -49,7 +49,7 @@ if(!isset($_SESSION["user"])){
 
     <main>
         <?php
-            $result = mysqli_query($mysql , "SELECT * FROM users WHERE id=" . $session_user["id"]);
+            $result = mysqli_query($mysqli , "SELECT * FROM users WHERE id=" . $session_user["id"]);
             $user = mysqli_fetch_assoc($result);
             echo '<h2>Личный кабинет</h2>';
             echo '<h3>' . $user["name"]. ' ' . '[' . $user['login'] . ']</h3>';
@@ -217,7 +217,7 @@ if(!isset($_SESSION["user"])){
                     $sql .= " WHERE " . implode(" AND ", $whereConditions);
                 }
 
-                $stmt = $mysql->prepare($sql);
+                $stmt = $mysqli->prepare($sql);
 
                 // Привязываем параметры
                 if (!empty($bindParams)) {
@@ -242,7 +242,7 @@ if(!isset($_SESSION["user"])){
                 }
                 $sql .= " LIMIT $offset, $recordsPerPage";
 
-                $stmt = $mysql->prepare($sql);
+                $stmt = $mysqli->prepare($sql);
 
                 // Привязываем параметры
                 if (!empty($bindParams)) {

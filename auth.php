@@ -57,10 +57,10 @@ include 'db.php';
 
             <?php
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $login = mysqli_real_escape_string($mysql, $_POST['login']);
+                $login = mysqli_real_escape_string($mysqli, $_POST['login']);
                 $password = md5($_POST['password']);
 
-                $stmt = $mysql->prepare("SELECT * FROM users WHERE login=? AND password=?");
+                $stmt = $mysqli->prepare("SELECT * FROM users WHERE login=? AND password=?");
                 $stmt->bind_param("ss", $login, $password);
                 $stmt->execute();
                 $result = $stmt->get_result();
