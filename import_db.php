@@ -2,7 +2,7 @@
 include 'db.php';
 
 $apiKey = '58d7b39098339f013c4d6f0cf8520de964800b52';
-$updateInterval = 120; // Интервал обновления данных в секундах (в данном случае 1 час)
+$updateInterval = 3600; // Интервал обновления данных в секундах 
 
 // Установка максимального времени выполнения скрипта в 0 (без ограничения)
 ini_set('max_execution_time', 0);
@@ -88,6 +88,12 @@ function fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, $limit) {
 
             if ($pageResponse !== false) {
                 $pageData = json_decode($pageResponse, true);
+
+                // Преобразование координат в строку перед добавлением в базу данных
+                foreach ($pageData['results'] as &$result) {
+                    $result['coordinates'] = json_encode($result['coordinates']);
+                }
+
                 $allResults = array_merge($allResults, $pageData['results']);
             } else {
                 echo 'Не удалось получить данные с API (страница ' . $page . ').';
@@ -102,23 +108,65 @@ function fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, $limit) {
     }
 }
 
-function updateDatabase($mysqli, $data){
-    // Очистка таблицы перед обновлением, если необходимо
-    mysqli_query($mysqli, "SET FOREIGN_KEY_CHECKS = 0");
-    mysqli_query($mysqli, "TRUNCATE TABLE dataset");
-    mysqli_query($mysqli, "SET FOREIGN_KEY_CHECKS = 1");
+function updateDatabase($mysqli, $data) {
+    if (!empty($data)) {
+        // Подготовка запроса на вставку
+        $stmtInsert = mysqli_prepare($mysqli, "INSERT INTO dataset (ordinalNumberAdministrationCommittee, nameOrganization, typeSport, address, clarifyingAddress, coordinates, metro_transportStop, district, telephone, addressSite_pageSocialNetworks, status, schedule, accessibilityPeopleDisabilities, availabilityRentalEquipment, availabilityInstructorServices, availabilityChangingRoom, availabilityStorageRoom, otherServices) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    // Загрузка данных в базу данных MySQL
-    $stmt = mysqli_prepare($mysqli, "INSERT INTO dataset(ordinalNumberAdministrationCommittee, nameOrganization, typeSport, address, clarifyingAddress, coordinates, metro_transportStop, district, telephone, addressSite_pageSocialNetworks, status, schedule, accessibilityPeopleDisabilities, availabilityRentalEquipment, availabilityInstructorServices, availabilityChangingRoom, availabilityStorageRoom, otherServices) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        // Подготовка запроса на обновление
+        $stmtUpdate = mysqli_prepare($mysqli, "UPDATE dataset SET nameOrganization=?, typeSport=?, address=?, clarifyingAddress=?, coordinates=?, metro_transportStop=?, district=?, telephone=?, addressSite_pageSocialNetworks=?, status=?, schedule=?, accessibilityPeopleDisabilities=?, availabilityRentalEquipment=?, availabilityInstructorServices=?, availabilityChangingRoom=?, availabilityStorageRoom=?, otherServices=? WHERE ordinalNumberAdministrationCommittee=?");
 
-    foreach ($data as $item) {
-        $rowData = array_values($item);
-        mysqli_stmt_bind_param($stmt, str_repeat('s', count($rowData)), ...$rowData);
-        mysqli_stmt_execute($stmt);
+        // Подготовка запроса на удаление
+        $stmtDelete = mysqli_prepare($mysqli, "DELETE FROM dataset WHERE ordinalNumberAdministrationCommittee=?");
+
+        // Получение всех существующих записей в базе данных
+        $existingRecords = [];
+        $result = mysqli_query($mysqli, "SELECT ordinalNumberAdministrationCommittee FROM dataset");
+        while ($row = mysqli_fetch_assoc($result)) {
+            $existingRecords[] = $row['ordinalNumberAdministrationCommittee'];
+        }
+
+        foreach ($data as $item) {
+            $rowData = array_values($item);
+
+            // Проверка существования записи в базе данных
+            if (in_array($item['number'], $existingRecords)) {
+                // Если запись существует, выполнить обновление
+                mysqli_stmt_bind_param($stmtUpdate, 'ssssssssssssssssss', $item['name'], $item['activity'], $item['address'],
+                $item['addressy'], $item['coordinates'], $item['metro'], $item['area'], $item['phone'], 
+                $item['site'], $item['status'], $item['time'], $item['reach'], $item['inventory'], $item['services'], $item['premises'],
+                $item['cameras'], $item['others'], $item['number']);
+
+                mysqli_stmt_execute($stmtUpdate);
+            } else {
+                // Если запись не существует, выполнить вставку
+                mysqli_stmt_bind_param($stmtInsert, 'ssssssssssssssssss', $item['number'], $item['name'], $item['activity'], $item['address'],
+                $item['addressy'], $item['coordinates'], $item['metro'], $item['area'], $item['phone'], 
+                $item['site'], $item['status'], $item['time'], $item['reach'], $item['inventory'], $item['services'], $item['premises'],
+                $item['cameras'], $item['others']);
+
+                mysqli_stmt_execute($stmtInsert);
+            }
+        
+        }
+        
+        // Удаление записей, которых нет в новом датасете, но есть в базе данных
+        $missingRecords = array_diff($existingRecords, array_column($data, 'number'));
+
+        foreach ($missingRecords as $missingRecord) {
+            mysqli_stmt_bind_param($stmtDelete, 's', $missingRecord);
+            mysqli_stmt_execute($stmtDelete);
+        }
+
+        mysqli_stmt_close($stmtInsert);
+        mysqli_stmt_close($stmtUpdate);
+        mysqli_stmt_close($stmtDelete);
+    } else {
+        echo 'Массив данных для обновления пуст.';
     }
-
-    mysqli_stmt_close($stmt);
+    
 }
+
 
 function exportToCSV($data, $filename) {
     $csvFile = new SplFileObject($filename, 'w');
@@ -142,7 +190,6 @@ if ($allDatasets !== false) {
     // Обработка ошибок и предотвращение вывода данных перед установкой заголовка
     ob_start();
 
-    // Вывод общего массива данных
     echo '<pre>';
     print_r($allDatasets);
     echo '</pre>';

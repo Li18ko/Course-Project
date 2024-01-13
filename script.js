@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+
   closeBtns.forEach(function (btn) {
     btn.addEventListener('click', closeModal);
   });
@@ -30,4 +31,5 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 });
+
 

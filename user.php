@@ -190,8 +190,8 @@ if(!isset($_SESSION["user"])){
                 $bindTypes = "";
 
                 if (!empty($searchTerm)) {
-                    $whereConditions[] = "(LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
-                    LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?)) AND favorites.user_id =" . $session_user['id'];
+                    $whereConditions[] = "(ordinalNumberAdministrationCommittee LIKE (?) OR LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
+                    LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?))";
 
                     // Привязываем параметры для поисковой строки
                     $bindParams = array_pad($bindParams, substr_count($whereConditions[0], '?'), $searchTerm);
@@ -215,7 +215,12 @@ if(!isset($_SESSION["user"])){
                 $sql = "SELECT COUNT(*) AS total FROM dataset JOIN favorites ON dataset.id = favorites.area_id";
                 if (!empty($whereConditions)) {
                     $sql .= " WHERE " . implode(" AND ", $whereConditions);
+                    $sql .= " AND favorites.user_id =" . $session_user['id'];
                 }
+                else {
+                    $sql .= " WHERE favorites.user_id =" . $session_user['id'];
+                }
+
 
                 $stmt = $mysqli->prepare($sql);
 
@@ -239,7 +244,12 @@ if(!isset($_SESSION["user"])){
                 $sql = "SELECT * FROM dataset JOIN favorites ON dataset.id = favorites.area_id";
                 if (!empty($whereConditions)) {
                     $sql .= " WHERE " . implode(" AND ", $whereConditions);
+                    $sql .= " AND favorites.user_id =" . $session_user['id'];
                 }
+                else {
+                    $sql .= " WHERE favorites.user_id =" . $session_user['id'];
+                }
+
                 $sql .= " LIMIT $offset, $recordsPerPage";
 
                 $stmt = $mysqli->prepare($sql);
@@ -280,6 +290,7 @@ if(!isset($_SESSION["user"])){
                 ?>
                 <table>
                     <tr class="table_header">
+                        <th>Порядковое число администрации и комитета</th>
                         <th>Вид площадки</th>
                         <th>Адрес</th>
                         <th>Метро/остановка общественного транспорта</th>
@@ -292,6 +303,7 @@ if(!isset($_SESSION["user"])){
                         while ($row = $result->fetch_assoc()) {
                             $modalId = "modal" . $row["id"];
                             echo '<tr data-modal-id="' . $modalId . '" class="line_table">';
+                            echo '<td>' . (!empty($row["ordinalNumberAdministrationCommittee"]) ? $row["ordinalNumberAdministrationCommittee"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["typeSport"]) ? $row["typeSport"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["address"]) ? $row["address"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["metro_transportStop"]) ? $row["metro_transportStop"] : '-') . '</td>';
@@ -302,6 +314,7 @@ if(!isset($_SESSION["user"])){
                             echo '<div id="' . $modalId . '" class="modal">';
                             echo '    <div class="modal-content">';
                             echo '        <span class="close">&times;</span>';
+                            echo '        <p class="parameters"><strong>Порядковое число администрации и комитета: </strong>' . (!empty($row["ordinalNumberAdministrationCommittee"]) ? $row["ordinalNumberAdministrationCommittee"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Название организации правообладателя: </strong>' . (!empty($row["nameOrganization"]) ? $row["nameOrganization"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Вид активности, вид спорта: </strong>' . (!empty($row["typeSport"]) ? $row["typeSport"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Адрес: </strong>' . (!empty($row["address"]) ? $row["address"] : '-') . '</p>';
@@ -317,7 +330,7 @@ if(!isset($_SESSION["user"])){
                             echo '        <p class="parameters"><strong>Наличие услуг инструктора: </strong>' . ($row["availabilityInstructorServices"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
                             echo '        <p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . ($row["availabilityChangingRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
                             echo '        <p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices "]) ? $row["otherServices "] : '-') . '</p>';
+                            echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
                             ?>
                             <div class="favorite"><?php
                                 echo '<a href="delete_favorite.php?id=' . $row["id"] . '&u=yes">Удалить из избранного</a>';?>

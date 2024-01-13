@@ -15,6 +15,7 @@ require("session.php");
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
     <link rel="icon" href="image\logo.svg" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -183,7 +184,7 @@ require("session.php");
                 $bindTypes = "";
 
                 if (!empty($searchTerm)) {
-                    $whereConditions[] = "LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
+                    $whereConditions[] = "ordinalNumberAdministrationCommittee LIKE (?) OR LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
                     LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?)";
 
                     // Привязываем параметры для поисковой строки
@@ -273,6 +274,7 @@ require("session.php");
                 ?>
                 <table>
                     <tr class="table_header">
+                        <th>Порядковое число администрации и комитета</th>
                         <th>Вид площадки</th>
                         <th>Адрес</th>
                         <th>Метро/остановка общественного транспорта</th>
@@ -285,6 +287,7 @@ require("session.php");
                         while ($row = $result->fetch_assoc()) {
                             $modalId = "modal" . $row["id"];
                             echo '<tr data-modal-id="' . $modalId . '" class="line_table">';
+                            echo '<td>' . (!empty($row["ordinalNumberAdministrationCommittee"]) ? $row["ordinalNumberAdministrationCommittee"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["typeSport"]) ? $row["typeSport"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["address"]) ? $row["address"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["metro_transportStop"]) ? $row["metro_transportStop"] : '-') . '</td>';
@@ -295,6 +298,7 @@ require("session.php");
                             echo '<div id="' . $modalId . '" class="modal">';
                             echo '    <div class="modal-content">';
                             echo '        <span class="close">&times;</span>';
+                            echo '        <p class="parameters"><strong>Порядковое число администрации и комитета: </strong>' . (!empty($row["ordinalNumberAdministrationCommittee"]) ? $row["ordinalNumberAdministrationCommittee"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Название организации правообладателя: </strong>' . (!empty($row["nameOrganization"]) ? $row["nameOrganization"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Вид активности, вид спорта: </strong>' . (!empty($row["typeSport"]) ? $row["typeSport"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Адрес: </strong>' . (!empty($row["address"]) ? $row["address"] : '-') . '</p>';
@@ -306,11 +310,11 @@ require("session.php");
                             echo '        <p class="parameters"><strong>Статус: </strong>' . (!empty($row["status"]) ? $row["status"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Время работы: </strong>' . (!empty($row["schedule"]) ? $row["schedule"] : '-') . '</p>';
                             echo '        <p class="parameters"><strong>Доступность для лиц с нарушениями здоровья: </strong>' . (!empty($row["accessibilityPeopleDisabilities"]) ? $row["accessibilityPeopleDisabilities"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие проката инвентаря: </strong>' . ($row["availabilityRentalEquipment"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие услуг инструктора: </strong>' . ($row["availabilityInstructorServices"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . ($row["availabilityChangingRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices "]) ? $row["otherServices "] : '-') . '</p>';
+                            echo '        <p class="parameters"><strong>Наличие проката инвентаря: </strong>' . ($row["availabilityRentalEquipment"] == '1' ? 'Да' : 'Нет') . '</p>';
+                            echo '        <p class="parameters"><strong>Наличие услуг инструктора: </strong>' . ($row["availabilityInstructorServices"] == '1' ? 'Да' : 'Нет') . '</p>';
+                            echo '        <p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . ($row["availabilityChangingRoom"] == '1' ? 'Да' : 'Нет') . '</p>';
+                            echo '        <p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == '1' ? 'Да' : 'Нет') . '</p>';
+                            echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
                             if (isset($_SESSION["user"])){
                                 $selectQuery = "SELECT id FROM favorites WHERE user_id = ? AND area_id = ?";
                                 $stmt = $mysqli->prepare($selectQuery);
@@ -368,6 +372,72 @@ require("session.php");
                 echo '<a class="btn last-page-btn" href="?'.$queryString.'">Последняя страница</a>';
             }
             ?>
+        </div>
+
+        <div class="histogram">
+            <h2>Самые популярные спортивные площадки</h2>
+            <canvas id="playgroundsChart"></canvas>
+            <?php
+            $dataHistogram = "SELECT favorites.area_id, dataset.ordinalNumberAdministrationCommittee, 
+            dataset.typeSport, dataset.address, COUNT(favorites.id) AS quantity 
+                FROM favorites JOIN dataset on dataset.id = favorites.area_id
+                GROUP BY area_id 
+                ORDER BY COUNT(favorites.id) desc LIMIT 3";
+            $stmt = $mysqli->prepare($dataHistogram);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $playgrounds = [];
+            $favoritesCount = [];
+            
+            $count = 0;
+            while ($row = $result->fetch_assoc()) {
+                $count += 1;
+                $id[] = $row['area_id'];
+                $playgrounds[] = $count;
+                echo '<p>'. $count . ') ' . $row['ordinalNumberAdministrationCommittee'] . '; Вид площадки: ' . $row['typeSport'] . '; Адрес: ' . $row['address'] .'.</p>';
+                $favoritesCount[] = $row['quantity'];
+            }
+
+            ?>
+            <script>
+                var id = <?php echo json_encode($id); ?>;
+                var playgrounds = <?php echo json_encode($playgrounds); ?>;
+                var favoritesCount = <?php echo json_encode($favoritesCount); ?>;
+                var colors = ['rgba(220, 50, 50, 0.4)', 'rgba(172, 61, 200, 0.4)', 'rgba(54, 162, 235, 0.4)', 'rgba(255, 206, 86, 0.4)', 'rgba(176, 229, 158, 0.4)'];
+                var borderСolors = ['rgba(220, 50, 50, 1)', 'rgba(172, 61, 200, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(176, 229, 158, 1)'];
+
+                var ctx = document.getElementById('playgroundsChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: playgrounds,
+                        datasets: [{
+                            label: 'Количество пользователей, которые были заинтересованы данной площадкой',
+                            data: favoritesCount,
+                            backgroundColor: colors,
+                            borderColor: borderСolors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                            },
+                            y: {
+                                beginAtZero: true,
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+
+                });
+            </script>
+
         </div>
         <br>
     </main>
