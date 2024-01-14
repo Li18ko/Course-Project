@@ -337,6 +337,9 @@ if(!isset($_SESSION["user"])){
                             <div class="favorite"><?php
                                 echo '<a href="delete_favorite.php?id=' . $row["id"] . '&u=yes">Удалить из избранного</a>';?>
                             </div>
+                            <div class="favorite"><?php
+                                echo '<a href="map.php?id=' . $row["area_id"] . '&view=fa">Посмотреть на карте</a>';?>
+                            </div>
                             <?php
                             echo '    </div>';
                             echo '</div>';

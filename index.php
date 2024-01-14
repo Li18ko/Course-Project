@@ -331,7 +331,7 @@ require("session.php");
                             
                                 $favoritesResult = $stmt->get_result();
                                 $favoriteRow = $favoritesResult->fetch_assoc();
-
+                                
                                 if ($favoriteRow) {
                                     $favoriteId = $favoriteRow['id'];
                                     ?>
@@ -345,7 +345,10 @@ require("session.php");
                                     </div>
                                 <?php }
                                 $stmt->close();
-                            }
+                            }?>
+                            <div class="favorite"><?php
+                                echo '<a href="map.php?id=' . $row["id"] . '&view=f">Посмотреть на карте</a>';?>
+                            </div><?php
                             echo '    </div>';
                             echo '</div>';
                         }

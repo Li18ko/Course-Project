@@ -2,8 +2,17 @@
 include 'db.php';
 require("session.php");
 
+
 $selectQuery = "SELECT * FROM dataset";
-$stmt = $mysqli->prepare($selectQuery);
+if (isset($_GET['view']) && ($_GET['view'] === 'f' || $_GET['view'] === 'fa')){
+    $id = $_GET['id'];
+    $selectQuery .= " WHERE id=?";
+    $stmt = $mysqli->prepare($selectQuery);
+    $stmt->bind_param('i', $id);
+} else {
+    $stmt = $mysqli->prepare($selectQuery);
+}
+
 $stmt->execute();
 $areas = $stmt->get_result();
 
@@ -13,6 +22,7 @@ while ($area = $areas->fetch_assoc()) {
     $coordinates[$area['ordinalNumberAdministrationCommittee']] = json_decode($area['coordinates'], true);
     $area_id[$area['ordinalNumberAdministrationCommittee']] = json_decode($area['id'], true);
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -56,6 +66,8 @@ while ($area = $areas->fetch_assoc()) {
 
             const sportsCoordinates = <?php echo json_encode($coordinates); ?>;
             const area_id = <?php echo json_encode($area_id); ?>;
+
+            const size = Object.keys(sportsCoordinates).length;
           
             var count = 0;
 
@@ -65,7 +77,7 @@ while ($area = $areas->fetch_assoc()) {
                 const coordinates = sportsCoordinates[sport];
                 const ordinalNumberAdministrationCommittee = sport;
                 const id_area = area_id[sport];
-                
+            
 
                 // Создание маркера
                 var myPlacemark = new ymaps.Placemark(coordinates, {
@@ -76,6 +88,12 @@ while ($area = $areas->fetch_assoc()) {
                     iconImageSize: [20, 20], // Замените размеры на подходящие для вашего изображения
                     iconImageOffset: [-15, -30] // Смещение метки
                 });
+
+                console.log(size);
+
+                if (size === 1){
+                    myMap.setCenter(coordinates, 13, { duration: 400 });
+                }
 
                 // При клике на метке меняем центр карты на координаты площадки с заданным duration
                 myPlacemark.events.add('click', (e) => {
@@ -109,7 +127,7 @@ while ($area = $areas->fetch_assoc()) {
 
                 // Добавление метки на карту
                 myMap.geoObjects.add(myPlacemark);
-            });
+            }); 
         }
             
     </script>
@@ -124,14 +142,22 @@ while ($area = $areas->fetch_assoc()) {
                 <div class="animated-line"></div>
             </div>
             <div class="sign_in-container">
-                <a href="index.php">
-                    <img src="image\home.svg" alt="На главную">
-                </a>
+                <?php
+                    if (isset($_GET['view']) && ($_GET['view'] === 'f')) {
+                ?>
+                    <a href="index.php">
+                        <img src="image\home.svg" alt="На главную">
+                    </a><?php
+                } else { ?>
+                    <a href="user.php">
+                        <img src="image\user.svg" alt="Домой">
+                    </a><?php
+                }?>
             </div>
         </div>
     </header>
     <main>
-        <div id="map" class="w-100" style="height: 70vh;"></div>
+        <div id="map" class="w-100" style="height: 69vh;"></div>
         <div id="myModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
