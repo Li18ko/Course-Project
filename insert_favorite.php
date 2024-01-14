@@ -11,7 +11,12 @@ $stmt->bind_param('ii', $user, $placeId);
 
 $stmt->execute();
 
-header('Location: index.php?');
+if (isset($_GET['m']) && $_GET['m'] === 'yes') {
+    header('Location: map.php');
+}
+else {
+    header('Location: index.php');
+}
 exit;
 
 ?>

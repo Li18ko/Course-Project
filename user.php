@@ -33,16 +33,18 @@ if(!isset($_SESSION["user"])){
                 <div class="animated-line"></div>
             </div>
             <div class="sign_in-container">
-                <div class="sign_in-container_left">
+                <div class="user-container_left">
                     <a href="index.php">
                         <img src="image\home.svg" alt="на главную">
                     </a>
                 </div>
                 <br>
                 <br>
-                <a href="logout.php">
-                    <img src="image\exit.svg" alt="Выход">
-                </a>
+                <div class="user-container_right">
+                    <a href="logout.php">
+                        <img src="image\exit.svg" alt="Выход">
+                    </a>
+                </div>
             </div>
         </div>
     </header>

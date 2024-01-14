@@ -15,6 +15,8 @@ if ($stmt->errno) {
 } else {
     if (isset($_GET['u']) && $_GET['u'] === 'yes'){
         header('Location: user.php');
+    } elseif (isset($_GET['m']) && $_GET['m'] === 'yes') {
+        header('Location: map.php');
     }
     else {
         header('Location: index.php');

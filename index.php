@@ -28,20 +28,28 @@ require("session.php");
                 <h1>Внутридворовые спортивные площадки Санкт-Петербурга</h1>
                 <div class="animated-line"></div>
             </div>
-            <div class="sign_in-container">
-                <?php
-                    if (!isset($_SESSION["user"])){ ?>
-                        <a href="auth.php">
-                            <img src="image\sign_in.svg" alt="Вход">
-                        </a>
-                    <?php }
-                    else { ?>
-                        <a href="user.php">
-                            <img src="image\user.svg" alt="Пользователь">
-                        </a>
-                    <?php }
-                ?>
-                
+            <div class="index-container">
+                <div class="index-container_left">
+                    <a href="map.php">
+                        <img src="image\map.svg" alt="Карта">
+                    </a>
+                </div>
+                <br>
+                <br>
+                <div class="index-container_right">
+                    <?php
+                        if (!isset($_SESSION["user"])){ ?>
+                            <a href="auth.php">
+                                <img src="image\sign_in.svg" alt="Вход">
+                            </a>
+                        <?php }
+                        else { ?>
+                            <a href="user.php">
+                                <img src="image\user.svg" alt="Пользователь">
+                            </a>
+                        <?php }
+                    ?>
+                </div>
             </div>
         </div>
     </header>
