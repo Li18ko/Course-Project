@@ -2,10 +2,17 @@
 include 'db.php';
 require("session.php");
 
+$view = 'f';
+$flag = 'big';
+
+if (isset($_GET['view'])){
+    $view = $_GET['view'];
+}
 
 $selectQuery = "SELECT * FROM dataset";
 if (isset($_GET['view']) && ($_GET['view'] === 'f' || $_GET['view'] === 'fa')){
     $id = $_GET['id'];
+    $flag = 'one';
     $selectQuery .= " WHERE id=?";
     $stmt = $mysqli->prepare($selectQuery);
     $stmt->bind_param('i', $id);
@@ -77,6 +84,9 @@ while ($area = $areas->fetch_assoc()) {
                 const coordinates = sportsCoordinates[sport];
                 const ordinalNumberAdministrationCommittee = sport;
                 const id_area = area_id[sport];
+
+                const view = <?php echo json_encode($view); ?>;
+                const flag = <?php echo json_encode($flag); ?>;
             
 
                 // Создание маркера
@@ -108,7 +118,7 @@ while ($area = $areas->fetch_assoc()) {
 
                     // Отправка AJAX-запроса на сервер с modalId
                     var xhr = new XMLHttpRequest();
-                    xhr.open('GET', 'get_modal_content.php?modalId=' + modalId, true);
+                    xhr.open('GET', 'get_modal_content.php?modalId=' + modalId + '&view=' + view + '&flag=' + flag, true);
 
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -143,14 +153,14 @@ while ($area = $areas->fetch_assoc()) {
             </div>
             <div class="sign_in-container">
                 <?php
-                    if (isset($_GET['view']) && ($_GET['view'] === 'f')) {
+                    if (isset($_GET['view']) && ($_GET['view'] === 'fa')) {
                 ?>
+                    <a href="user.php">
+                    <img src="image\user.svg" alt="Домой">
+                </a><?php
+                } else { ?>
                     <a href="index.php">
                         <img src="image\home.svg" alt="На главную">
-                    </a><?php
-                } else { ?>
-                    <a href="user.php">
-                        <img src="image\user.svg" alt="Домой">
                     </a><?php
                 }?>
             </div>

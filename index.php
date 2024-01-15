@@ -336,7 +336,7 @@ require("session.php");
                                     $favoriteId = $favoriteRow['id'];
                                     ?>
                                     <div class="favorite"><?php
-                                        echo '<a href="delete_favorite.php?id=' . $favoriteId . '">Удалить из избранного</a>';?>
+                                        echo '<a href="delete_favorite.php?id=' . $favoriteId . '&view=f">Удалить из избранного</a>';?>
                                     </div>
                                 <?php } else {
                                     ?>

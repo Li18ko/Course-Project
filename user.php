@@ -335,7 +335,7 @@ if(!isset($_SESSION["user"])){
                             echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
                             ?>
                             <div class="favorite"><?php
-                                echo '<a href="delete_favorite.php?id=' . $row["id"] . '&u=yes">Удалить из избранного</a>';?>
+                                echo '<a href="delete_favorite.php?id=' . $row["id"] . '&u=yes&view=fa">Удалить из избранного</a>';?>
                             </div>
                             <div class="favorite"><?php
                                 echo '<a href="map.php?id=' . $row["area_id"] . '&view=fa">Посмотреть на карте</a>';?>

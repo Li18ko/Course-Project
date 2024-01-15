@@ -4,6 +4,17 @@ require("session.php");
 
 $modalId = $_GET['modalId'];
 
+$view = 'f';
+$flag = 'big';
+
+if (isset($_GET['flag'])) {
+    $flag = $_GET['flag'];
+}
+
+if (isset($_GET['view'])) {
+    $view = $_GET['view'];
+}
+
 $selectQuery = "SELECT * FROM dataset WHERE id = ?";
 $stmt = $mysqli->prepare($selectQuery);
 $stmt->bind_param('i', $modalId);
@@ -32,7 +43,7 @@ $modalContentArray[] = '<p class="parameters"><strong>Наличие помещ�
 $modalContentArray[] = '<p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == '1' ? 'Да' : 'Нет') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
 
-if (isset($_SESSION["user"])){
+if (isset($_SESSION["user"])) {
     $select = "SELECT id FROM favorites WHERE user_id = ? AND area_id = ?";
     $stmt = $mysqli->prepare($select);
     $stmt->bind_param('ii', $session_user['id'], $row["id"]);
@@ -43,9 +54,9 @@ if (isset($_SESSION["user"])){
 
     if ($favoriteRow) {
         $favoriteId = $favoriteRow['id'];
-        $modalContentArray[] = '<div class="favorite"><a href="delete_favorite.php?id=' . $favoriteId . '&m=yes">Удалить из избранного</a></div>';
+        $modalContentArray[] = '<div class="favorite"><a href="delete_favorite.php?id=' . $favoriteId . '&m=yes&view=' . $view . '&flag=' . $flag . '">Удалить из избранного</a></div>';
     } else {
-         $modalContentArray[] = '<div class="favorite"><a href="insert_favorite.php?id=' . $row["id"] . '&m=yes">Добавить в избранное</a></div>';
+        $modalContentArray[] = '<div class="favorite"><a href="insert_favorite.php?id=' . $row["id"] . '&m=yes&view=' . $view . '&flag=' . $flag . '">Добавить в избранное</a></div>';
     }
     $stmt->close();
 }
