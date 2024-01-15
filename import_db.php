@@ -7,7 +7,8 @@ $updateInterval = 3600; // Интервал обновления данных в
 // Установка максимального времени выполнения скрипта в 0 (без ограничения)
 ini_set('max_execution_time', 0);
 
-function getAllDatasets($apiKey) {
+function getAllDatasets($apiKey)
+{
     $url = "http://data.gov.spb.ru/api/v2/datasets/?per_page=100";
     $datasets = [];
 
@@ -35,7 +36,8 @@ function getAllDatasets($apiKey) {
     return $datasets;
 }
 
-function getLatestVersionData($datasetId, $apiKey) {
+function getLatestVersionData($datasetId, $apiKey)
+{
     $url = "http://data.gov.spb.ru/api/v2/datasets/{$datasetId}/versions/latest/";
 
     // Создаем контекст потока с заголовком для передачи токена
@@ -57,7 +59,8 @@ function getLatestVersionData($datasetId, $apiKey) {
     }
 }
 
-function fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, $limit) {
+function fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, $limit)
+{
     $url = "http://data.gov.spb.ru/api/v2/datasets/{$datasetId}/versions/latest/data/{$latestVersionId}/?per_page={$limit}";
 
     // Создаем контекст потока с заголовком для передачи токена
@@ -108,7 +111,8 @@ function fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, $limit) {
     }
 }
 
-function updateDatabase($mysqli, $data) {
+function updateDatabase($mysqli, $data)
+{
     if (!empty($data)) {
         // Подготовка запроса на вставку
         $stmtInsert = mysqli_prepare($mysqli, "INSERT INTO dataset (ordinalNumberAdministrationCommittee, nameOrganization, typeSport, address, clarifyingAddress, coordinates, metro_transportStop, district, telephone, addressSite_pageSocialNetworks, status, schedule, accessibilityPeopleDisabilities, availabilityRentalEquipment, availabilityInstructorServices, availabilityChangingRoom, availabilityStorageRoom, otherServices) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -132,24 +136,60 @@ function updateDatabase($mysqli, $data) {
             // Проверка существования записи в базе данных
             if (in_array($item['number'], $existingRecords)) {
                 // Если запись существует, выполнить обновление
-                mysqli_stmt_bind_param($stmtUpdate, 'ssssssssssssssssss', $item['name'], $item['activity'], $item['address'],
-                $item['addressy'], $item['coordinates'], $item['metro'], $item['area'], $item['phone'], 
-                $item['site'], $item['status'], $item['time'], $item['reach'], $item['inventory'], $item['services'], $item['premises'],
-                $item['cameras'], $item['others'], $item['number']);
+                mysqli_stmt_bind_param(
+                    $stmtUpdate,
+                    'ssssssssssssssssss',
+                    $item['name'],
+                    $item['activity'],
+                    $item['address'],
+                    $item['addressy'],
+                    $item['coordinates'],
+                    $item['metro'],
+                    $item['area'],
+                    $item['phone'],
+                    $item['site'],
+                    $item['status'],
+                    $item['time'],
+                    $item['reach'],
+                    $item['inventory'],
+                    $item['services'],
+                    $item['premises'],
+                    $item['cameras'],
+                    $item['others'],
+                    $item['number']
+                );
 
                 mysqli_stmt_execute($stmtUpdate);
             } else {
                 // Если запись не существует, выполнить вставку
-                mysqli_stmt_bind_param($stmtInsert, 'ssssssssssssssssss', $item['number'], $item['name'], $item['activity'], $item['address'],
-                $item['addressy'], $item['coordinates'], $item['metro'], $item['area'], $item['phone'], 
-                $item['site'], $item['status'], $item['time'], $item['reach'], $item['inventory'], $item['services'], $item['premises'],
-                $item['cameras'], $item['others']);
+                mysqli_stmt_bind_param(
+                    $stmtInsert,
+                    'ssssssssssssssssss',
+                    $item['number'],
+                    $item['name'],
+                    $item['activity'],
+                    $item['address'],
+                    $item['addressy'],
+                    $item['coordinates'],
+                    $item['metro'],
+                    $item['area'],
+                    $item['phone'],
+                    $item['site'],
+                    $item['status'],
+                    $item['time'],
+                    $item['reach'],
+                    $item['inventory'],
+                    $item['services'],
+                    $item['premises'],
+                    $item['cameras'],
+                    $item['others']
+                );
 
                 mysqli_stmt_execute($stmtInsert);
             }
-        
+
         }
-        
+
         // Удаление записей, которых нет в новом датасете, но есть в базе данных
         $missingRecords = array_diff($existingRecords, array_column($data, 'number'));
 
@@ -164,11 +204,12 @@ function updateDatabase($mysqli, $data) {
     } else {
         echo 'Массив данных для обновления пуст.';
     }
-    
+
 }
 
 
-function exportToCSV($data, $filename) {
+function exportToCSV($data, $filename)
+{
     $csvFile = new SplFileObject($filename, 'w');
 
     // Записываем заголовки столбцов
@@ -202,39 +243,57 @@ if ($allDatasets !== false) {
             // Получаем id последней версии для данного датасета
             $latestVersionData = getLatestVersionData($datasetId, $apiKey);
 
-            // Если данные успешно получены
-            if ($latestVersionData !== false) {
-                // Извлекаем необходимое значение "id"
-                $latestVersionId = $latestVersionData['structures'][0]['id'];
+            // Создаем объект DateTime из строки с датой
+            $specifiedDate = DateTime::createFromFormat('d.m.Y', $latestVersionData['created_at']);
+
+            // Устанавливаем часовой пояс для Москвы
+            $specifiedDate->setTimezone(new DateTimeZone('Europe/Moscow'));
+
+            // Получаем текущую дату и время в Московском времени
+            $currentDate = new DateTime('now', new DateTimeZone('Europe/Moscow'));
+
+            // Вычисляем разницу во времени
+            $timeDifference = $currentDate->diff($specifiedDate);
+
+            // Проверяем, прошло ли менее 8 дней
+            if ($timeDifference->days < 8) {
+
+                // Если данные успешно получены
+                if ($latestVersionData !== false) {
+                    // Извлекаем необходимое значение "id"
+                    $latestVersionId = $latestVersionData['structures'][0]['id'];
+                } else {
+                    echo 'Ошибка при получении данных о последней версии.';
+                }
+
+                // Запрос данных из API для конкретного датасета
+                $data = fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, 100);
+
+                // Если данные успешно получены
+                if ($data !== false) {
+                    // Обработка ошибок и предотвращение вывода данных перед установкой заголовка
+                    ob_start();
+
+                    // Вывод общего массива данных
+                    echo '<pre>';
+                    print_r($data);
+                    echo '</pre>';
+
+                    // Вставка данных в базу данных
+                    updateDatabase($mysqli, $data);
+
+                    $query = "CALL SiteTypeColumn()";
+                    $result = mysqli_query($mysqli, $query);
+
+                    // Экспорт данных в CSV
+                    exportToCSV($data, 'output.csv');
+
+                    ob_end_clean(); // Очищаем буфер вывода
+                } else {
+                    echo 'Ошибка при получении данных с API для датасета: ' . $dataset['name'];
+                }
             } else {
-                echo 'Ошибка при получении данных о последней версии.';
-            }
-
-            // Запрос данных из API для конкретного датасета
-            $data = fetchDataFromAPI($datasetId, $apiKey, $latestVersionId, 100);
-
-            // Если данные успешно получены
-            if ($data !== false) {
-                // Обработка ошибок и предотвращение вывода данных перед установкой заголовка
-                ob_start();
-
-                // Вывод общего массива данных
-                echo '<pre>';
-                print_r($data);
-                echo '</pre>';
-
-                // Вставка данных в базу данных
-                updateDatabase($mysqli, $data);
-
-                $query = "CALL SiteTypeColumn()";
-                $result = mysqli_query($mysqli, $query);
-
-                // Экспорт данных в CSV
-                exportToCSV($data, 'output.csv');
-
-                ob_end_clean(); // Очищаем буфер вывода
-            } else {
-                echo 'Ошибка при получении данных с API для датасета: ' . $dataset['name'];
+                exit;
             }
         }
     }
@@ -242,10 +301,4 @@ if ($allDatasets !== false) {
     echo 'Ошибка при получении списка наборов данных с API.';
 }
 
-// Ожидание перед следующим обновлением данных
-sleep($updateInterval);
-
-// Перенаправление на самого себя для автоматического обновления
-header("Location: {$_SERVER['PHP_SELF']}");
-exit();
 ?>

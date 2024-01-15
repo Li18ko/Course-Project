@@ -53,8 +53,7 @@ if(!isset($_SESSION["user"])){
         <?php
             $result = mysqli_query($mysqli , "SELECT * FROM users WHERE id=" . $session_user["id"]);
             $user = mysqli_fetch_assoc($result);
-            echo '<h2>Личный кабинет</h2>';
-            echo '<h3>' . $user["name"]. ' ' . '[' . $user['login'] . ']</h3>';
+            echo '<p class="h">Добро пожаловать в личный кабинет, <strong style="font-weight: bold;">' . $user['login'] . '</strong> !</p>';
         ?>
 
         <div class="search-container">
@@ -191,9 +190,12 @@ if(!isset($_SESSION["user"])){
                 $bindParams = array();
                 $bindTypes = "";
 
+                $flag_conclusion = 0;
+
                 if (!empty($searchTerm)) {
                     $whereConditions[] = "(ordinalNumberAdministrationCommittee LIKE (?) OR LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
                     LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?))";
+                    $flag_conclusion = 1;
 
                     // Привязываем параметры для поисковой строки
                     $bindParams = array_pad($bindParams, substr_count($whereConditions[0], '?'), $searchTerm);
@@ -206,6 +208,7 @@ if(!isset($_SESSION["user"])){
                 foreach ($filterOptions as $filter) {
                     if (isset($_GET[$filter]) && $_GET[$filter] !== 'all_type') {
                         $whereConditions[] = "LOWER(" . $filter . ") LIKE LOWER(?)";
+                        $flag_conclusion = 2;
 
                         // Привязываем параметры для фильтров
                         $bindParams[] = "%" . translatingFilter($_GET[$filter]) . "%";
@@ -275,18 +278,42 @@ if(!isset($_SESSION["user"])){
             $pluralForm = "";
             $x = "";
 
-            if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
-                $pluralForm = "площадка";
-                $x = "Была найдена ";
-            } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
-                $pluralForm = "площадки";
-                $x = "Были найдены ";
-            } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
-                $pluralForm = "площадок";
-                $x = "Было найдено ";
+            if ($flag_conclusion === 1){
+                if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
+                    $pluralForm = "площадка с помощью поисковой строки";
+                    $x = "В Избранном была найдена ";
+                } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
+                    $pluralForm = "площадки с помощью поисковой строки";
+                    $x = "В Избранном были найдены ";
+                } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
+                    $pluralForm = "площадок с помощью поисковой строки";
+                    $x = "В Избранном было найдено ";
+                }
+            }elseif ($flag_conclusion === 2) {
+                if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
+                    $pluralForm = "площадка с помощью фильтрации";
+                    $x = "В Избранном была найдена ";
+                } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
+                    $pluralForm = "площадки с помощью фильтрации";
+                    $x = "В Избранном были найдены ";
+                } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
+                    $pluralForm = "площадок с помощью фильтрации";
+                    $x = "В Избранном было найдено ";
+                }
+            } else {
+                if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
+                    $pluralForm = "площадка, добавленная в Избранное";
+                    $x = "В данной таблице представлена ";
+                } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
+                    $pluralForm = "площадки, добавленные в Избранное";
+                    $x = "В данной таблице представлены ";
+                } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
+                    $pluralForm = "площадок, добавленных в Избранное";
+                    $x = "В данной таблице представлено ";
+                }
             }
 
-            echo '<p>' . $x . ' ' . $totalRecords . ' ' . $pluralForm . '</p>';
+            echo '<p style=font-size:20px;">' . $x . ' ' . $totalRecords . ' ' . $pluralForm . '</p>';
 
             if ($totalRecords != 0) {
                 ?>

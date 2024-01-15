@@ -55,7 +55,13 @@ require("session.php");
     </header>
 
     <main>
-        <h2>Выберите необходимые параметры и найдите подходящую для вас спортивную площадку</h2>
+        <p class="h">Выберите необходимые параметры и найдите подходящую для вас спортивную площадку</p>
+
+        <?php
+            if (!isset($_SESSION["user"])){
+                ?><p class="small">После авторизации вам станет доступна функция Избранное</p><?php
+            }
+        ?>
 
         <div class="search-container">
             <div id="main_menu">
@@ -180,6 +186,7 @@ require("session.php");
                 <?php
                 }
             ?>
+
         </div>
 
         <div class="info">
@@ -191,10 +198,12 @@ require("session.php");
                 $bindParams = array();
                 $bindTypes = "";
 
+                $flag_conclusion = 0;
+
                 if (!empty($searchTerm)) {
                     $whereConditions[] = "ordinalNumberAdministrationCommittee LIKE (?) OR LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
                     LOWER(metro_transportStop) LIKE LOWER(?) OR LOWER(schedule) LIKE LOWER(?) OR LOWER(status) LIKE LOWER(?)";
-
+                    $flag_conclusion = 1;
                     // Привязываем параметры для поисковой строки
                     $bindParams = array_pad($bindParams, substr_count($whereConditions[0], '?'), $searchTerm);
                     $bindTypes .= str_repeat('s', substr_count($whereConditions[0], '?'));
@@ -206,6 +215,8 @@ require("session.php");
                 foreach ($filterOptions as $filter) {
                     if (isset($_GET[$filter]) && $_GET[$filter] !== 'all_type') {
                         $whereConditions[] = "LOWER(" . $filter . ") LIKE LOWER(?)";
+
+                        $flag_conclusion = 2;
 
                         // Привязываем параметры для фильтров
                         $bindParams[] = "%" . translatingFilter($_GET[$filter]) . "%";
@@ -265,18 +276,42 @@ require("session.php");
             $pluralForm = "";
             $x = "";
 
-            if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
-                $pluralForm = "площадка";
-                $x = "Была найдена ";
-            } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
-                $pluralForm = "площадки";
-                $x = "Были найдены ";
-            } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
-                $pluralForm = "площадок";
-                $x = "Было найдено ";
+            if ($flag_conclusion === 1){
+                if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
+                    $pluralForm = "площадка с помощью поисковой строки";
+                    $x = "Была найдена ";
+                } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
+                    $pluralForm = "площадки с помощью поисковой строки";
+                    $x = "Были найдены ";
+                } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
+                    $pluralForm = "площадок с помощью поисковой строки";
+                    $x = "Было найдено ";
+                }
+            }elseif ($flag_conclusion === 2) {
+                if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
+                    $pluralForm = "площадка с помощью фильтрации";
+                    $x = "Была найдена ";
+                } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
+                    $pluralForm = "площадки с помощью фильтрации";
+                    $x = "Были найдены ";
+                } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
+                    $pluralForm = "площадок с помощью фильтрации";
+                    $x = "Было найдено ";
+                }
+            } else {
+                if ($totalRecords % 10 === 1 && $totalRecords % 100 !== 11) {
+                    $pluralForm = "площадка";
+                    $x = "В данной таблице представлена ";
+                } elseif (($totalRecords % 10 >= 2 && $totalRecords % 10 <= 4) && ($totalRecords % 100 < 12 || $totalRecords % 100 > 14)) {
+                    $pluralForm = "площадки";
+                    $x = "В данной таблице представлены ";
+                } elseif ($totalRecords % 10 === 0 || ($totalRecords % 10 >= 5 && $totalRecords % 10 <= 9) || ($totalRecords % 100 >= 11 && $totalRecords % 100 <= 14)) {
+                    $pluralForm = "площадок";
+                    $x = "В данной таблице представлено ";
+                }
             }
 
-            echo '<p>' . $x . ' ' . $totalRecords . ' ' . $pluralForm . '</p>';
+            echo '<p style=font-size:20px;">' . $x . ' ' . $totalRecords . ' ' . $pluralForm . '</p>';
 
             if ($totalRecords != 0) {
                 ?>
