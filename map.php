@@ -2,15 +2,15 @@
 include 'db.php';
 require("session.php");
 
-$view = 'f';
+$place = '';
 $flag = 'big';
 
-if (isset($_GET['view'])){
-    $view = $_GET['view'];
+if (isset($_GET['place'])){
+    $place = $_GET['place'];
 }
 
 $selectQuery = "SELECT * FROM dataset";
-if (isset($_GET['view']) && ($_GET['view'] === 'f' || $_GET['view'] === 'fa')){
+if (isset($_GET['place']) && ($_GET['place'] === 'g' || $_GET['place'] === 'u')){
     $id = $_GET['id'];
     $flag = 'one';
     $selectQuery .= " WHERE id=?";
@@ -85,7 +85,7 @@ while ($area = $areas->fetch_assoc()) {
                 const ordinalNumberAdministrationCommittee = sport;
                 const id_area = area_id[sport];
 
-                const view = <?php echo json_encode($view); ?>;
+                const place = <?php echo json_encode($place); ?>;
                 const flag = <?php echo json_encode($flag); ?>;
             
 
@@ -118,17 +118,34 @@ while ($area = $areas->fetch_assoc()) {
 
                     // Отправка AJAX-запроса на сервер с modalId
                     var xhr = new XMLHttpRequest();
-                    xhr.open('GET', 'get_modal_content.php?modalId=' + modalId + '&view=' + view + '&flag=' + flag, true);
+                    xhr.open('GET', 'get_modal_content.php?modalId=' + modalId + '&place=' + place + '&flag=' + flag + '&m=no', true);
 
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState == 4 && xhr.status == 200) {
-                            var modalContent = xhr.responseText;
+                            var responseData = JSON.parse(xhr.responseText);
+                            var modalContentArray = responseData.modalContentArray;
 
                             // Отображение контента в модальном окне
-                            document.getElementById('modalContent').innerHTML = modalContent;
+                            var modalContent = document.getElementById('modalContent');
+                            modalContent.innerHTML = '';
+
+                            modalContentArray.forEach(function (content) {
+                                var p = document.createElement('p');
+                                p.innerHTML = content;
+                                modalContent.appendChild(p);
+                            });
 
                             // Открытие модального окна
                             document.getElementById('myModal').style.display = 'block';
+
+                            // Получение кнопки "close"
+                            var closeBtn = document.getElementsByClassName('close')[0];
+
+                            // Добавление обработчика события для закрытия модального окна
+                            closeBtn.onclick = function () {
+                                document.getElementById('myModal').style.display = 'none';
+                            };
+                            
                         }
                     };
 
@@ -153,7 +170,7 @@ while ($area = $areas->fetch_assoc()) {
             </div>
             <div class="sign_in-container">
                 <?php
-                    if (isset($_GET['view']) && ($_GET['view'] === 'fa')) {
+                    if (isset($_GET['place']) && ($_GET['place'] === 'u')) {
                 ?>
                     <a href="user.php">
                     <img src="image\user.svg" alt="Домой">
@@ -179,8 +196,6 @@ while ($area = $areas->fetch_assoc()) {
     <footer>
         <p>&copy; 2023-2024 Корнеева Е.С.</p>
     </footer>
-
-    <script src="script.js"></script>
 </body>
 
 </html>

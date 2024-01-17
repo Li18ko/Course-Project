@@ -183,14 +183,15 @@ if(!isset($_SESSION["user"])){
 
         <div class="info">
         <?php
-            if ($_SERVER["REQUEST_METHOD"] === "GET") {
+            if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_SERVER["REQUEST_METHOD"])) {
                 $searchTerm = isset($_GET['search']) ? '%' . $_GET['search'] . '%' : '';
 
                 $whereConditions = array();
                 $bindParams = array();
                 $bindTypes = "";
-
+                
                 $flag_conclusion = 0;
+                $totalRecords = 0;
 
                 if (!empty($searchTerm)) {
                     $whereConditions[] = "(ordinalNumberAdministrationCommittee LIKE (?) OR LOWER(typeSport) LIKE LOWER(?) OR LOWER(address) LIKE LOWER(?) OR 
@@ -330,7 +331,7 @@ if(!isset($_SESSION["user"])){
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            $modalId = "modal" . $row["id"];
+                            $modalId = $row["area_id"];
                             echo '<tr data-modal-id="' . $modalId . '" class="line_table">';
                             echo '<td>' . (!empty($row["ordinalNumberAdministrationCommittee"]) ? $row["ordinalNumberAdministrationCommittee"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["typeSport"]) ? $row["typeSport"] : '-') . '</td>';
@@ -339,40 +340,15 @@ if(!isset($_SESSION["user"])){
                             echo '<td>' . (!empty($row["schedule"]) ? $row["schedule"] : '-') . '</td>';
                             echo '<td>' . (!empty($row["status"]) ? $row["status"] : '-') . '</td>';
                             echo '</tr>';
-
-                            echo '<div id="' . $modalId . '" class="modal">';
-                            echo '    <div class="modal-content">';
-                            echo '        <span class="close">&times;</span>';
-                            echo '        <p class="parameters"><strong>Порядковое число администрации и комитета: </strong>' . (!empty($row["ordinalNumberAdministrationCommittee"]) ? $row["ordinalNumberAdministrationCommittee"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Название организации правообладателя: </strong>' . (!empty($row["nameOrganization"]) ? $row["nameOrganization"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Вид активности, вид спорта: </strong>' . (!empty($row["typeSport"]) ? $row["typeSport"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Адрес: </strong>' . (!empty($row["address"]) ? $row["address"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Уточнение адреса: </strong>' . (!empty($row["clarifyingAddress"]) ? $row["clarifyingAddress"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Ближайшая станция метро, остановка общественного транспорта: </strong>' . (!empty($row["metro_transportStop"]) ? $row["metro_transportStop"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Район: </strong>' . (!empty($row["district"]) ? $row["district"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Телефон(ы): </strong>' . (!empty($row["telephone"]) ? $row["telephone"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Адрес сайта или страницы в социальных сетях: </strong>' . (!empty($row["addressSite_pageSocialNetworks"]) ? $row["addressSite_pageSocialNetworks"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Статус: </strong>' . (!empty($row["status"]) ? $row["status"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Время работы: </strong>' . (!empty($row["schedule"]) ? $row["schedule"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Доступность для лиц с нарушениями здоровья: </strong>' . (!empty($row["accessibilityPeopleDisabilities"]) ? $row["accessibilityPeopleDisabilities"] : '-') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие проката инвентаря: </strong>' . ($row["availabilityRentalEquipment"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие услуг инструктора: </strong>' . ($row["availabilityInstructorServices"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . ($row["availabilityChangingRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == 'ЛОЖЬ' ? 'Нет' : 'Да') . '</p>';
-                            echo '        <p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
-                            ?>
-                            <div class="favorite"><?php
-                                echo '<a href="delete_favorite.php?id=' . $row["id"] . '&u=yes&view=fa">Удалить из избранного</a>';?>
-                            </div>
-                            <div class="favorite"><?php
-                                echo '<a href="map.php?id=' . $row["area_id"] . '&view=fa">Посмотреть на карте</a>';?>
-                            </div>
-                            <?php
-                            echo '    </div>';
-                            echo '</div>';
                         }
                     }
                     ?>
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <div id="modalContent"></div>
+                        </div>
+                    </div>
                 </table>
                 <br>
                 <br>
@@ -410,7 +386,7 @@ if(!isset($_SESSION["user"])){
         <p>&copy; 2023-2024 Корнеева Е.С.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="modal_in_table.js"></script>
 
 </body>
 </html>

@@ -4,15 +4,20 @@ require("session.php");
 
 $modalId = $_GET['modalId'];
 
-$view = 'f';
-$flag = 'big';
+$place = 'g';
+$flag = 'big'; 
+$m = 'yes';
+
+if (isset($_GET['place'])) {
+    $place = $_GET['place'];
+}
 
 if (isset($_GET['flag'])) {
     $flag = $_GET['flag'];
 }
 
-if (isset($_GET['view'])) {
-    $view = $_GET['view'];
+if (isset($_GET['m'])) {
+    $m = $_GET['m'];
 }
 
 $selectQuery = "SELECT * FROM dataset WHERE id = ?";
@@ -37,10 +42,10 @@ $modalContentArray[] = '<p class="parameters"><strong>Адрес сайта ил
 $modalContentArray[] = '<p class="parameters"><strong>Статус: </strong>' . (!empty($row["status"]) ? $row["status"] : '-') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Время работы: </strong>' . (!empty($row["schedule"]) ? $row["schedule"] : '-') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Доступность для лиц с нарушениями здоровья: </strong>' . (!empty($row["accessibilityPeopleDisabilities"]) ? $row["accessibilityPeopleDisabilities"] : '-') . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие проката инвентаря: </strong>' . ($row["availabilityRentalEquipment"] == '1' ? 'Да' : 'Нет') . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие услуг инструктора: </strong>' . ($row["availabilityInstructorServices"] == '1' ? 'Да' : 'Нет') . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . ($row["availabilityChangingRoom"] == '1' ? 'Да' : 'Нет') . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие камеры хранения: </strong>' . ($row["availabilityStorageRoom"] == '1' ? 'Да' : 'Нет') . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие проката инвентаря: </strong>' . (!empty($row["availabilityRentalEquipment"]) ? $row["availabilityRentalEquipment"] : '-')  . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие услуг инструктора: </strong>' . (!empty($row["availabilityInstructorServices"] ) ? $row["availabilityInstructorServices"] : '-')  . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . (!empty($row["availabilityChangingRoom"]) ? $row["availabilityChangingRoom"] : '-') . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие камеры хранения: </strong>' . (!empty($row["availabilityStorageRoom"]) ? $row["availabilityStorageRoom"] : '-') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
 
 if (isset($_SESSION["user"])) {
@@ -54,14 +59,24 @@ if (isset($_SESSION["user"])) {
 
     if ($favoriteRow) {
         $favoriteId = $favoriteRow['id'];
-        $modalContentArray[] = '<div class="favorite"><a href="delete_favorite.php?id=' . $favoriteId . '&m=yes&view=' . $view . '&flag=' . $flag . '">Удалить из избранного</a></div>';
+        $modalContentArray[] = '<div class="favorite"><a href="delete_favorite.php?id=' . $favoriteId . '&place=' . $place . '&flag=' . $flag . '&m=' . $m . '">Удалить из избранного</a></div>';
     } else {
-        $modalContentArray[] = '<div class="favorite"><a href="insert_favorite.php?id=' . $row["id"] . '&m=yes&view=' . $view . '&flag=' . $flag . '">Добавить в избранное</a></div>';
+        $modalContentArray[] = '<div class="favorite"><a href="insert_favorite.php?id=' . $row["id"] . '&place=' . $place . '&flag=' . $flag . '&m=' . $m . '">Добавить в избранное</a></div>';
     }
+
     $stmt->close();
 }
 
+if ($m == 'yes'){
+    $modalContentArray[] = '<div class="favorite"><a href="map.php?id=' . $row["id"] . '&place=' . $place . '&flag=' . $flag . '">Посмотреть на карте</a></div>';
+}
 
 
-echo implode('', $modalContentArray);
+$data = array(
+    'id' => $modalId,
+    'modalContentArray' => $modalContentArray
+);
+
+header('Content-Type: application/json');
+echo json_encode($data);
 ?>

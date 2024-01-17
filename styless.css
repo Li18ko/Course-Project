@@ -207,6 +207,16 @@ th, td {
     cursor: pointer;
 }
 
+.line_table_index {
+    color: #000000;
+    transition: color 0.3s ease;
+}
+
+.line_table_index:hover {
+    background-color: #E1F7E2;
+    cursor: pointer;
+}
+
 .pagination {
     display: flex;
     justify-content: center;
