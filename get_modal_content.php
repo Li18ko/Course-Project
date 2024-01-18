@@ -42,10 +42,10 @@ $modalContentArray[] = '<p class="parameters"><strong>Адрес сайта ил
 $modalContentArray[] = '<p class="parameters"><strong>Статус: </strong>' . (!empty($row["status"]) ? $row["status"] : '-') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Время работы: </strong>' . (!empty($row["schedule"]) ? $row["schedule"] : '-') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Доступность для лиц с нарушениями здоровья: </strong>' . (!empty($row["accessibilityPeopleDisabilities"]) ? $row["accessibilityPeopleDisabilities"] : '-') . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие проката инвентаря: </strong>' . (!empty($row["availabilityRentalEquipment"]) ? $row["availabilityRentalEquipment"] : '-')  . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие услуг инструктора: </strong>' . (!empty($row["availabilityInstructorServices"] ) ? $row["availabilityInstructorServices"] : '-')  . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . (!empty($row["availabilityChangingRoom"]) ? $row["availabilityChangingRoom"] : '-') . '</p>';
-$modalContentArray[] = '<p class="parameters"><strong>Наличие камеры хранения: </strong>' . (!empty($row["availabilityStorageRoom"]) ? $row["availabilityStorageRoom"] : '-') . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие проката инвентаря: </strong>' . (!empty($row["availabilityRentalEquipment"]) && $row["availabilityRentalEquipment"] == "1" ? "Да" : 'Нет' ) . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие услуг инструктора: </strong>' . (!empty($row["availabilityInstructorServices"] ) && $row["availabilityInstructorServices"] == "1" ? "Да" : 'Нет')  . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие помещения для переодевания: </strong>' . (!empty($row["availabilityChangingRoom"]) && $row["availabilityChangingRoom"] == "1" ? "Да" : 'Нет') . '</p>';
+$modalContentArray[] = '<p class="parameters"><strong>Наличие камеры хранения: </strong>' . (!empty($row["availabilityStorageRoom"]) && $row["availabilityStorageRoom"] == "1" ? "Да" : 'Нет') . '</p>';
 $modalContentArray[] = '<p class="parameters"><strong>Иные услуги (перечень): </strong>' . (!empty($row["otherServices"]) ? $row["otherServices"] : '-') . '</p>';
 
 if (isset($_SESSION["user"])) {
